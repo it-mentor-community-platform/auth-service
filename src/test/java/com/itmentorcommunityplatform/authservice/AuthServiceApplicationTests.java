@@ -1,4 +1,4 @@
-package com.tasktracker.authservice;
+package com.itmentorcommunityplatform.authservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

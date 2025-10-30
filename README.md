@@ -41,3 +41,8 @@
 {
   "initDataRaw": "..."
 }
+
+# Build and run Docker image
+
+docker build -t auth-service:local-stack .
+docker run -p 8080:8080 --env SPRING_PROFILES_ACTIVE=local-stack auth-service:local-stack

@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/V1__create_users_table.sql
+  - include:
+      file: db/changelog/changes/V2__create_roles_table.sql
+  - include:
+      file: db/changelog/changes/V3__create_users_roles_table.sql

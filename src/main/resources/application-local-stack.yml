@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://database:5432/it_mentor_community_platform
-    username: ${POSTGRES_USERNAME:root}
-    password: ${POSTGRES_PASSWORD:password}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yml
@@ -11,5 +11,5 @@ telegram:
   bot-token: ${TELEGRAM_BOT_TOKEN:open test token}
 
 jwt:
-  secret: ${JWT_SECRET:test-secret}
+  secret: ${JWT_SECRET}
   expiration_minutes: 30

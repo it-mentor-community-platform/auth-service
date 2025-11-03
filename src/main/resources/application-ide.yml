@@ -10,7 +10,7 @@ spring:
 
 
 telegram:
-    bot-token: ${TELEGRAM_BOT_TOKEN:open test token}
+  bot-token: ${TELEGRAM_BOT_TOKEN:open test token}
 jwt:
-    secret: ${JWT_SECRET}
-    expiration_minutes: 30
+  secret: ${JWT_SECRET}
+  expiration_minutes: 30

@@ -16,7 +16,7 @@ public class TelegramAuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    @Value("${jwt.expiration_minutes}")
+    @Value("${telegram.init-data-expiration-seconds}")
     private long expirationMinutes;
 
     public AuthResponse authenticateByTelegram(String initData) {

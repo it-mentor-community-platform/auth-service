@@ -1,6 +1,7 @@
 package com.itmentorcommunityplatform.authservice.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itmentorcommunityplatform.authservice.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;

@@ -1,5 +1,6 @@
 package com.itmentorcommunityplatform.authservice.auth;
 
+import com.itmentorcommunityplatform.authservice.entity.User;
 import com.itmentorcommunityplatform.authservice.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
 package com.itmentorcommunityplatform.authservice.auth;
 
-import com.itmentorcommunityplatform.authservice.configuration.JdbcConfig;
+import com.itmentorcommunityplatform.authservice.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

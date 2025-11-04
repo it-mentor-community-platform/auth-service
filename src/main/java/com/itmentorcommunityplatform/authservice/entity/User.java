@@ -1,4 +1,4 @@
-package com.itmentorcommunityplatform.authservice.auth;
+package com.itmentorcommunityplatform.authservice.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

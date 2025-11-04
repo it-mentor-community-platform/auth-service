@@ -1,0 +1,41 @@
+###  Successful request
+POST http://localhost:8080/api/auth/by-telegram
+Content-Type: text/plain
+
+query_id=AAHdF6IQAAAAAN0XohDhrOrc&user={"id":279058397,"first_name":"Vladislav","last_name":"Kibenko","username":"vdkfrost","language_code":"ru","is_premium":true}&auth_date=1662771648&hash=c501b71e775f74ce10e377dea85a7ea24ecd640b223ea86dfe453e0eaed2e2b2
+
+
+###  Error 1 — missing hash
+POST http://localhost:8080/api/auth/by-telegram
+Content-Type: text/plain
+
+query_id=AAHdF6IQAAAAAN0XohDhrOrc&user={"id":279058397,"first_name":"Vladislav"}&auth_date=1662771648
+
+
+###  Error 2 — invalid hash
+POST http://localhost:8080/api/auth/by-telegram
+Content-Type: text/plain
+
+query_id=AAHdF6IQAAAAAN0XohDhrOrc&user={"id":279058397,"first_name":"Vladislav"}&auth_date=1662771648&hash=invalid123
+
+
+###  Error 3 — malformed JSON in user
+POST http://localhost:8080/api/auth/by-telegram
+Content-Type: text/plain
+
+query_id=AAHdF6IQAAAAAN0XohDhrOrc&user={id:279058397,first_name:"Vladislav"}&auth_date=1662771648&hash=c501b71e775f74ce10e377dea85a7ea24ecd640b223ea86dfe453e0eaed2e2b2
+
+
+###  Error 4 — expired auth_date
+POST http://localhost:8080/api/auth/by-telegram
+Content-Type: text/plain
+
+query_id=AAHdF6IQAAAAAN0XohDhrOrc&user={"id":279058397,"first_name":"Vladislav"}&auth_date=1600000000&hash=c501b71e775f74ce10e377dea85a7ea24ecd640b223ea86dfe453e0eaed2e2b2
+
+
+###  Error 5 — internal server error (simulated)
+POST http://localhost:8080/api/auth/by-telegram
+Content-Type: text/plain
+
+query_id=TRIGGER_INTERNAL_ERROR
+

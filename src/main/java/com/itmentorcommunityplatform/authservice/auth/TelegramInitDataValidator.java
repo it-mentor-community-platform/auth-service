@@ -48,7 +48,7 @@ public class TelegramInitDataValidator {
             map.put(key, value);
         }
 
-        log.info("Parsed initData map: {}", map);
+        log.info("Parsed initData map");
         return map;
     }
 

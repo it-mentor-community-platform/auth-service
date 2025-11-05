@@ -1,15 +1,12 @@
 package com.itmentorcommunityplatform.authservice.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
+import org.springframework.data.annotation.Id;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
+@Data
 public class User {
+    @Id
     private Integer id;
+
     private Long telegramUserId;
 }

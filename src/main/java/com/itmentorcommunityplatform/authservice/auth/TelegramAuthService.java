@@ -18,12 +18,12 @@ public class TelegramAuthService {
     private final UserMapper userMapper;
 
     @Value("${telegram.init-data-expiration-seconds}")
-    private long expirationMinutes;
+    private long expirationSeconds;
 
     public AuthResponse authenticateByTelegram(String initData) {
         try {
             log.info("Starting Telegram authentication process...");
-            User telegramUser = validator.validate(initData, expirationMinutes);
+            User telegramUser = validator.validateUserInitData(initData, expirationSeconds);
             log.info("InitData validated successfully for telegramUserId={}", telegramUser.getTelegramUserId());
 
             User user = userRepository.findByTelegramUserId(telegramUser.getTelegramUserId());

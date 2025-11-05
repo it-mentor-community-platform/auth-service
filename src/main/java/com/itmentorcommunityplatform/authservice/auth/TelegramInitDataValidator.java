@@ -21,7 +21,7 @@ public class TelegramInitDataValidator {
     @Value("${telegram.bot-token}")
     private String botToken;
 
-    public User validate(String initData, long expirationSeconds) throws InvalidInitDataException {
+    public User validateUserInitData(String initData, long expirationSeconds) throws InvalidInitDataException {
         Map<String, String> data = parseInitData(initData);
 
         validateHash(data);

@@ -7,11 +7,10 @@ spring:
   liquibase:
     change-log: classpath:/db/changelog/db.changelog-master.yml
 
-
-
 telegram:
   bot-token: ${TELEGRAM_BOT_TOKEN:open test token}
   init-data-expiration-seconds: 1800
+
 jwt:
   secret: 632eca39fc29068edc74133ca9cf8f40b4942191f80c0c78dd588835beb5f57b
   expiration_minutes: 30

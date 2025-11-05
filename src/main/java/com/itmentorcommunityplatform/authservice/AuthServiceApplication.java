@@ -12,8 +12,4 @@ public class AuthServiceApplication {
         SpringApplication.run(AuthServiceApplication.class, args);
     }
 
-
-    public List<Integer> getSquaresOfEvenNumbers(List<Integer> numbers){
-        return numbers.stream().filter(n-> n%2 == 0).map(n-> n*n).sorted().limit(3).toList();
-    }
 }

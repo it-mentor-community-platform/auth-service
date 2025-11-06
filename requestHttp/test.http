@@ -1,0 +1,49 @@
+
+### Telegram Auth — Successful request
+// Для тестирования использовать bot-token бота и воспользоваться инитДатой которую можно получить по этой ссылке - https://t.me/testtesttest111122233_bot/getdata
+POST http://localhost:8080/api/auth/by-telegram
+Content-Type: text/plain
+
+user=%7B%22id%22%3A628570951%2C%22first_name%22%3A%22llqq%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22llllqqqqqqqqq%22%2C%22language_code%22%3A%22ru%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FEF4-6Yu3pyiGXKjJFD5g3XO0FJqhQUezRmbIeFTEMtE.svg%22%7D&chat_instance=-4289646433238170020&chat_type=private&auth_date=1762334768&signature=BXVyC3y3tKYcaaHAm7ggLJjEXi5hXeRnT2_qBkGjhXfeSPfnr8oC_aBU07WKEASXyyyrtmaYqH6EY0vw4-NTBQ&hash=4ed8d735fca82fa7a5976943b6bb1e787cebaf9750c75f416a11d9151fc85f1a
+
+###
+
+### Telegram Auth — Missing hash
+POST http://localhost:8080/api/auth/by-telegram
+Content-Type: text/plain
+
+user=%7B%22id%22%3A628570951%2C%22first_name%22%3A%22llqq%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22llllqqqqq2%2C%22language_code%22%3A%22ru%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2zRmbIeFTEMtE.svg%22%7D&chat_instanc46433238170020&chat_type=private&auth_date=1762334768&signature=BXVyC3y3tKYcaaHAm7ggLJjEXi5hXeRnT2_qBkGjhXfeSPfnr8oC_aBU07WKEASXyyyrtmaYqH6EY0vw4-NTBQ&hash=4ed8d735fca82fa7a5976943b6bb1e787cebaf9750c75f416a11d9151fc85f1a
+
+
+###
+
+### Telegram Auth — Invalid hash
+POST http://localhost:8080/api/auth/by-telegram
+Content-Type: text/plain
+
+user=%7B%22id%22%3A628570951%2C%22first_name%22%3A%22llqq%22%2C%22last_name%22%3A%22%22%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%.&auth_date=1762334768&signature=BXVyC3y3tKYcaaHAm7ggLJjEXi5hXeRnT2_qBkGjhXfeSPfnr8oC_aBU07WKEASXyyyrtmaYqH6EY0vw4-NTBQ&hash=4ed8d735fca82fa7a5976943b6bb1e787cebaf9750c75f416a11d9151fc85f1a
+
+
+###
+
+### Telegram Auth — Malformed JSON in user
+POST http://localhost:8080/api/auth/by-telegram
+Content-Type: text/plain
+
+use%22ru%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FEF4-6Yu3pyiGXKjJFD5g3XO0FJqhQUezRmbIeFTEMtE.svg%22%7D&chat_instance=-4289646433238170020&chat_type=private&auth_date=1762334768&signature=BXVyC3y3tKYcaaHAm7ggLJjEXi5hXeRnT2_qBkGjhXfeSPfnr8oC_aBU07WKEASXyyyrtmaYqH6EY0vw4-NTBQ&hash=4ed8d735fca82fa7a5976943b6bb1e787cebaf9750c75f416a11d9151fc85f1a
+
+###
+
+### Telegram Auth — Expired auth_date
+POST http://localhost:8080/api/auth/by-telegram
+Content-Type: text/plain
+
+user=%7B%22id%22%3A628570951%2C%22first_name%22%3A%22llqq%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22llllqqqqqqqqq%22%2C%22language_code%22%3A%22ru%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2FEF4-6Yu3pyiGXKjJFD5
+
+###
+
+### Telegram Auth — Simulated internal server error
+POST http://localhost:8080/api/auth/by-telegram
+Content-Type: text/plain
+
+user=TRIGGER_INTERNAL_ERROR

@@ -6,7 +6,7 @@ RUN gradle dependencies --no-daemon
 COPY src ./src
 RUN gradle clean bootJar --no-daemon
 
-FROM openjdk:21-jdk
+FROM eclipse-temurin:21-jre-alpine-3.22
 WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar app.jar
 EXPOSE 8080

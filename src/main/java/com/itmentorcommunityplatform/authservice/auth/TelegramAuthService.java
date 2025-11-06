@@ -44,7 +44,6 @@ public class TelegramAuthService {
             log.error("Telegram authentication failed: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
-            log.error("Unexpected error during Telegram authentication", e);
             throw new RuntimeException("Authentication failed", e);
         }
 

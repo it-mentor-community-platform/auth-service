@@ -1,6 +1,8 @@
 package com.itmentorcommunityplatform.authservice.advice;
 
 import com.itmentorcommunityplatform.authservice.auth.InvalidInitDataException;
+import com.itmentorcommunityplatform.authservice.internalUser.InvalidRoleException;
+import com.itmentorcommunityplatform.authservice.internalUser.UserAlreadyExistsException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,22 @@ public class GlobalExceptionHandler  {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request));
+    }
+
+    @ExceptionHandler(InvalidRoleException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidRole(InvalidRoleException ex,HttpServletRequest request) {
+        log.warn("Invalid role in request: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), request));
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleInvalidRole(UserAlreadyExistsException ex,HttpServletRequest request) {
+        log.warn("User exists: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(buildError(HttpStatus.CONFLICT, ex.getMessage(), request));
     }
 
     @ExceptionHandler(Exception.class)

@@ -17,7 +17,7 @@ public class AuthController {
 
     @PostMapping("/by-telegram")
     public ResponseEntity<Void> authenticate(@RequestBody String initData) {
-        AuthResponse response = telegramAuthService.authenticateByTelegram(initData);
+        AuthResponseDto response = telegramAuthService.authenticateByTelegram(initData);
         return ResponseEntity.ok()
                 .header(HttpHeaders.AUTHORIZATION,"Bearer " + response.accessToken())
                 .build();

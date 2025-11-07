@@ -23,6 +23,9 @@ dependencies {
     //data
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 
+    //validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
     //web
     implementation 'org.springframework.boot:spring-boot-starter-web'
     runtimeOnly 'org.postgresql:postgresql'

@@ -21,7 +21,7 @@ public class TelegramAuthService {
     @Value("${telegram.init-data-expiration-seconds}")
     private long expirationSeconds;
 
-    public AuthResponse authenticateByTelegram(String initData) {
+    public AuthResponseDto authenticateByTelegram(String initData) {
         try {
             log.info("Starting Telegram authentication process...");
             User telegramUser = validator.validateUserInitData(initData, expirationSeconds);
@@ -39,7 +39,7 @@ public class TelegramAuthService {
             UserResponseDto userResponseDto = userMapper.toDto(user);
             log.info("User successfully authenticated via Telegram");
 
-            return new AuthResponse(token,userResponseDto);
+            return new AuthResponseDto(token,userResponseDto);
 
         } catch (InvalidInitDataException e) {
             log.error("Telegram authentication failed: {}", e.getMessage());

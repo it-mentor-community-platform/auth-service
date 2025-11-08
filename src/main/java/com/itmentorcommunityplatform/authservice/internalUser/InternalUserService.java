@@ -33,7 +33,7 @@ public class InternalUserService {
         log.info("New user created with id={}", user.getId());
 
 
-        var roles = roleRepository.findByNames(rolesNames);
+        var roles = roleRepository.findByNameIn(rolesNames);
         log.info("Roles that was found: {}", roles.stream().toList());
         if (roles.size() != rolesNames.size()) {
             throw new InvalidRoleException("Unknown roles: " +

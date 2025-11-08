@@ -1,5 +1,6 @@
 package com.itmentorcommunityplatform.authservice.internalUser;
 
+import com.itmentorcommunityplatform.authservice.entity.Role;
 import com.itmentorcommunityplatform.authservice.entity.User;
 import com.itmentorcommunityplatform.authservice.repository.RoleRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRepository;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,29 +26,27 @@ public class InternalUserService {
         var rolesNames = requestDto.roles();
 
 
-        var user = userRepository.findByTelegramUserId(telegramId);
-        if (user != null) {
-            throw new UserAlreadyExistsException("User with telegramUserId " + telegramId + " already exists");
-        }
-        user = new User();
-        user.setTelegramUserId(telegramId);
-        userRepository.save(user);
-        log.info("New user created with id={}", user.getId());
+        var user = userRepository.findByTelegramUserId(telegramId)
+                .orElseGet(() -> {
+                    User newUser = new User();
+                    newUser.setTelegramUserId(telegramId);
+                    userRepository.save(newUser);
+                    log.info("New user created with id={}", newUser.getId());
+                    return newUser;
+                });
+
 
 
         var roles = roleRepository.findByNameIn(rolesNames);
         log.info("Roles that was found: {}", roles.stream().toList());
         if (roles.size() != rolesNames.size()) {
-            throw new InvalidRoleException("Unknown roles: " +
-                                           rolesNames.stream()
-                                                   .filter(
-                                                           r -> roles
-                                                                   .stream()
-                                                                   .noneMatch(
-                                                                           role -> role.getName().equals(r)
-                                                                   )
-                                                   )
-                                                   .toList());
+            String unknownRoles = rolesNames.stream()
+                    .filter(role -> roles.stream()
+                            .map(Role::getName)
+                            .noneMatch(role::equals)
+                    )
+                    .collect(Collectors.joining(", "));
+            throw new InvalidRoleException("Unknown roles: " + unknownRoles);
         }
         var rolesId = roles.stream().map(r -> r.getId()).toList();
         userRoleRepository.insertUserRole(user.getId(), rolesId);

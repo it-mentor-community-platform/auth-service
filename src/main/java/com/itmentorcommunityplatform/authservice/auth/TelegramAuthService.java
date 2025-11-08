@@ -27,12 +27,14 @@ public class TelegramAuthService {
             Long telegramUserId = validator.extractUserFromInitData(initData, expirationSeconds);
             log.info("InitData validated successfully for telegramUserId={}", telegramUserId);
 
-            User user = userRepository.findByTelegramUserId(telegramUserId);
-            if (user == null) {
-                user.setTelegramUserId(telegramUserId);
-                user = userRepository.save(user);
-                log.info("New user created with id={}", user.getId());
-            }
+            User user = userRepository.findByTelegramUserId(telegramUserId)
+                    .orElseGet(() -> {
+                        User newUser = new User();
+                        newUser.setTelegramUserId(telegramUserId);
+                        userRepository.save(newUser);
+                        log.info("New user created with id={}", newUser.getId());
+                        return newUser;
+                    });
 
             String token = jwtService.generateToken(telegramUserId);
             log.info("JWT token generated for userId={}", user.getId());

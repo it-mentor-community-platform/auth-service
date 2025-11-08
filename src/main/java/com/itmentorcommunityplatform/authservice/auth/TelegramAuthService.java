@@ -24,22 +24,23 @@ public class TelegramAuthService {
     public AuthResponseDto authenticateByTelegram(String initData) {
         try {
             log.info("Starting Telegram authentication process...");
-            User telegramUser = validator.validateUserInitData(initData, expirationSeconds);
-            log.info("InitData validated successfully for telegramUserId={}", telegramUser.getTelegramUserId());
+            Long telegramUserId = validator.extractUserFromInitData(initData, expirationSeconds);
+            log.info("InitData validated successfully for telegramUserId={}", telegramUserId);
 
-            User user = userRepository.findByTelegramUserId(telegramUser.getTelegramUserId());
+            User user = userRepository.findByTelegramUserId(telegramUserId);
             if (user == null) {
-                user = userRepository.save(telegramUser);
+                user.setTelegramUserId(telegramUserId);
+                user = userRepository.save(user);
                 log.info("New user created with id={}", user.getId());
             }
 
-            String token = jwtService.generateToken(telegramUser.getTelegramUserId());
+            String token = jwtService.generateToken(telegramUserId);
             log.info("JWT token generated for userId={}", user.getId());
 
             UserResponseDto userResponseDto = userMapper.toDto(user);
             log.info("User successfully authenticated via Telegram");
 
-            return new AuthResponseDto(token,userResponseDto);
+            return new AuthResponseDto(token, userResponseDto);
 
         } catch (InvalidInitDataException e) {
             log.error("Telegram authentication failed: {}", e.getMessage());

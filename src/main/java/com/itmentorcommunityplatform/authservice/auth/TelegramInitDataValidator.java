@@ -2,6 +2,7 @@ package com.itmentorcommunityplatform.authservice.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itmentorcommunityplatform.authservice.entity.User;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.HmacAlgorithms;
 import org.apache.commons.codec.digest.HmacUtils;
@@ -15,22 +16,23 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class TelegramInitDataValidator {
+
+    private final ObjectMapper objectMapper;
 
     @Value("${telegram.bot-token}")
     private String botToken;
 
-    public User validateUserInitData(String initData, long expirationSeconds) throws InvalidInitDataException {
+    public Long extractUserFromInitData(String initData, long expirationSeconds) throws InvalidInitDataException {
         Map<String, String> data = parseInitData(initData);
 
         validateHash(data);
         validateAuthDate(data, expirationSeconds);
 
         long telegramUserId = extractTelegramUserId(data);
-        User user = new User();
-        user.setTelegramUserId(telegramUserId);
-        return user;
+        return telegramUserId;
     }
 
     private Map<String, String> parseInitData(String initData) {
@@ -96,7 +98,7 @@ public class TelegramInitDataValidator {
             if (userJson == null)
                 throw new InvalidInitDataException("Missing user");
 
-            return new ObjectMapper().readTree(userJson).get("id").asLong();
+            return objectMapper.readTree(userJson).get("id").asLong();
         } catch (Exception e) {
             throw new InvalidInitDataException("Invalid user JSON");
         }

@@ -43,15 +43,11 @@ public class TelegramAuthService {
             log.info("User successfully authenticated via Telegram");
 
             return new AuthResponseDto(token, userResponseDto);
-
         } catch (InvalidInitDataException e) {
             log.error("Telegram authentication failed: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Authentication failed", e);
         }
-
     }
-
-
 }

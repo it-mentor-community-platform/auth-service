@@ -5,3 +5,5 @@ databaseChangeLog:
       file: db/changelog/changes/V2__create_roles_table.sql
   - include:
       file: db/changelog/changes/V3__create_users_roles_table.sql
+  - include:
+      file: db/changelog/changes/V4__insert_default_roles_in_table.sql

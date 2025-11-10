@@ -1,0 +1,43 @@
+### Internal User  — Successful request
+POST http://localhost:8080/api/auth/internal/user
+Content-Type: application/json
+// Написать новый telegram_user_id для успешного импорта нового пользователя вместе с его ролями
+
+{
+  "telegram_user_id": 6440401305,
+  "roles": ["ADMIN","STUDENT"]
+}
+###
+
+### Internal User  — 400 Bad Request
+POST http://localhost:8080/api/auth/internal/user
+Content-Type: application/json
+
+{
+  "telegram_user_id": 628570952,
+  "roles": ["ADMIN", "UNKNOWN_ROLE"]
+}
+###
+
+
+
+### Internal User  — 500 Unexpected error
+POST http://localhost:8080/api/auth/internal/user
+Content-Type: application/json
+//Нужно ввести  telegram_user_id уже существуещего в БД пользователя
+
+{
+  "telegram_user_i": 6440401305,
+  "roles": ["ADMIN","STUDENT"]
+}
+
+### Internal User  — 400 Not Null
+POST http://localhost:8080/api/auth/internal/user
+Content-Type: application/json
+//Нужно ввести  telegram_user_id уже существуещего в БД пользователя
+
+{
+  "telegram_user_i": 6440401305,
+  "roles": []
+}
+

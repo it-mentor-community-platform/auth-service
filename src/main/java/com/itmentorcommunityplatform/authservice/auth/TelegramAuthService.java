@@ -2,6 +2,7 @@ package com.itmentorcommunityplatform.authservice.auth;
 
 import com.itmentorcommunityplatform.authservice.entity.User;
 import com.itmentorcommunityplatform.authservice.mapper.UserMapper;
+import com.itmentorcommunityplatform.authservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,25 +21,28 @@ public class TelegramAuthService {
     @Value("${telegram.init-data-expiration-seconds}")
     private long expirationSeconds;
 
-    public AuthResponse authenticateByTelegram(String initData) {
+    public AuthResponseDto authenticateByTelegram(String initData) {
         try {
             log.info("Starting Telegram authentication process...");
-            User telegramUser = validator.validateUserInitData(initData, expirationSeconds);
-            log.info("InitData validated successfully for telegramUserId={}", telegramUser.getTelegramUserId());
+            Long telegramUserId = validator.extractUserFromInitData(initData, expirationSeconds);
+            log.info("InitData validated successfully for telegramUserId={}", telegramUserId);
 
-            User user = userRepository.findByTelegramUserId(telegramUser.getTelegramUserId());
-            if (user == null) {
-                user = userRepository.save(telegramUser);
-                log.info("New user created with id={}", user.getId());
-            }
+            User user = userRepository.findByTelegramUserId(telegramUserId)
+                    .orElseGet(() -> {
+                        User newUser = new User();
+                        newUser.setTelegramUserId(telegramUserId);
+                        userRepository.save(newUser);
+                        log.info("New user created with id={}", newUser.getId());
+                        return newUser;
+                    });
 
-            String token = jwtService.generateToken(telegramUser.getTelegramUserId());
+            String token = jwtService.generateToken(telegramUserId);
             log.info("JWT token generated for userId={}", user.getId());
 
             UserResponseDto userResponseDto = userMapper.toDto(user);
             log.info("User successfully authenticated via Telegram");
 
-            return new AuthResponse(token,userResponseDto);
+            return new AuthResponseDto(token, userResponseDto);
 
         } catch (InvalidInitDataException e) {
             log.error("Telegram authentication failed: {}", e.getMessage());

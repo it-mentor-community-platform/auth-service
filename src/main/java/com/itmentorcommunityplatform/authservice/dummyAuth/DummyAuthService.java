@@ -2,7 +2,6 @@ package com.itmentorcommunityplatform.authservice.dummyAuth;
 
 import com.itmentorcommunityplatform.authservice.auth.AuthResponseDto;
 import com.itmentorcommunityplatform.authservice.auth.JwtService;
-import com.itmentorcommunityplatform.authservice.auth.TelegramInitDataValidator;
 import com.itmentorcommunityplatform.authservice.auth.UserResponseDto;
 import com.itmentorcommunityplatform.authservice.entity.User;
 import com.itmentorcommunityplatform.authservice.mapper.UserMapper;

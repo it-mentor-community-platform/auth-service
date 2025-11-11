@@ -19,12 +19,22 @@ Content-Type: application/json
 }
 ###
 
-### Dummy User  — 500
+### Dummy User  — 404
 POST http://localhost:8080/api/auth/by-dummy
 Content-Type: application/json
 
 {
   "user_id": 0,
+  "roles": ["ADMIN","STUDENT"]
+}
+###
+
+### Dummy User  — 500
+POST http://localhost:8080/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "user_id": 1123441441244124,
   "roles": ["ADMIN","STUDENT"]
 }
 ###

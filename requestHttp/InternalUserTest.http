@@ -24,17 +24,17 @@ Content-Type: application/json
 ### Internal User  — 500 Unexpected error
 POST http://localhost:8080/api/auth/internal/user
 Content-Type: application/json
-//Нужно ввести  telegram_user_id уже существуещего в БД пользователя
+
 
 {
-  "telegram_user_i": 6440401305,
+  "telegram_user_id": 644040100000000000305,
   "roles": ["ADMIN","STUDENT"]
 }
 
 ### Internal User  — 400 Not Null
 POST http://localhost:8080/api/auth/internal/user
 Content-Type: application/json
-//Нужно ввести  telegram_user_id уже существуещего в БД пользователя
+
 
 {
   "telegram_user_i": 6440401305,

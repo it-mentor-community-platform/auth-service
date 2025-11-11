@@ -23,8 +23,8 @@ public class DummyAuthService {
         try {
             log.info("|Dummy| Authenticate process started");
 
-            User user = userRepository.findUserById(requestDto.userId())
-                    .orElseThrow(() -> new RuntimeException("User with id = {} not found"));
+            User user = userRepository.findById(requestDto.userId())
+                    .orElseThrow(() -> new UserNotFoundException(requestDto.userId()));
 
             String token = jwtService.generateToken(user.getTelegramUserId());
             log.info("JWT token generated for userId={}", user.getId());

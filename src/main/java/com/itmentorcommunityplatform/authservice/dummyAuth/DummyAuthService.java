@@ -9,6 +9,7 @@ import com.itmentorcommunityplatform.authservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,9 +20,9 @@ public class DummyAuthService {
     private final UserMapper userMapper;
 
 
+    @Transactional(readOnly = true)
     public AuthResponseDto authenticateDummy(DummyRequestDto requestDto) {
-        try {
-            log.info("|Dummy| Authenticate process started");
+            log.debug("|Dummy| Authenticate process started");
 
             User user = userRepository.findById(requestDto.userId())
                     .orElseThrow(() -> new UserNotFoundException(requestDto.userId()));
@@ -33,8 +34,5 @@ public class DummyAuthService {
             log.info("|Dummy| User successfully authenticated ");
 
             return new AuthResponseDto(token, userResponseDto);
-        } catch (Exception e) {
-            throw new RuntimeException("Authentication failed", e);
-        }
     }
 }

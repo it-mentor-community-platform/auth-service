@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -21,6 +22,7 @@ public class TelegramAuthService {
     @Value("${telegram.init-data-expiration-seconds}")
     private long expirationSeconds;
 
+    @Transactional
     public AuthResponseDto authenticateByTelegram(String initData) {
         try {
             log.info("Starting Telegram authentication process...");
@@ -28,13 +30,7 @@ public class TelegramAuthService {
             log.info("InitData validated successfully for telegramUserId={}", telegramUserId);
 
             User user = userRepository.findByTelegramUserId(telegramUserId)
-                    .orElseGet(() -> {
-                        User newUser = new User();
-                        newUser.setTelegramUserId(telegramUserId);
-                        userRepository.save(newUser);
-                        log.info("New user created with id={}", newUser.getId());
-                        return newUser;
-                    });
+                    .orElseGet(() -> createNewUser(telegramUserId));
 
             String token = jwtService.generateToken(telegramUserId);
             log.info("JWT token generated for userId={}", user.getId());
@@ -49,5 +45,13 @@ public class TelegramAuthService {
         } catch (Exception e) {
             throw new RuntimeException("Authentication failed", e);
         }
+    }
+
+    private User createNewUser(Long telegramUserId) {
+        User newUser = new User();
+        newUser.setTelegramUserId(telegramUserId);
+        User saved = userRepository.save(newUser);
+        log.info("New user created with id={}", saved.getId());
+        return saved;
     }
 }

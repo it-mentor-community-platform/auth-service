@@ -1,0 +1,31 @@
+### Dummy User  — Successful request
+POST http://localhost:8080/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "roles": ["ADMIN","STUDENT"]
+}
+###
+
+
+### Dummy User  — 400
+POST http://localhost:8080/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "roles": []
+}
+###
+
+### Dummy User  — 400
+POST http://localhost:8080/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "user_id": -2,
+  "roles": ["ADMIN","STUDENT"]
+}
+###
+

@@ -1,6 +1,7 @@
 package com.itmentorcommunityplatform.authservice.advice;
 
 import com.itmentorcommunityplatform.authservice.auth.InvalidInitDataException;
+import com.itmentorcommunityplatform.authservice.dummyAuth.UserNotFoundException;
 import com.itmentorcommunityplatform.authservice.internalUser.InvalidRoleException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +45,20 @@ public class GlobalExceptionHandler  {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(buildError(HttpStatus.BAD_REQUEST, errorMessage, request));
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleUserNotFound(
+            UserNotFoundException ex,
+            HttpServletRequest request) {
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(buildError(
+                        HttpStatus.NOT_FOUND,
+                        ex.getMessage(),
+                        request
+                ));
     }
 
 

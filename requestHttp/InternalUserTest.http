@@ -19,21 +19,9 @@ Content-Type: application/json
 }
 ###
 
-
 ### Internal User  — 400 Not Null
 POST http://localhost:8080/api/auth/internal/user
 Content-Type: application/json
-
-
-{
-  "telegram_user_i": 6440401305,
-  "roles": []
-}
-
-### Internal User  — 400 Not Null
-POST http://localhost:8080/api/auth/internal/user
-Content-Type: application/json
-//Нужно ввести  telegram_user_id уже существуещего в БД пользователя
 
 {
   "telegram_user_i": 6440401305,

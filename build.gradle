@@ -50,6 +50,11 @@ dependencies {
     //codec
     implementation 'commons-codec:commons-codec:1.18.0'
 
+    //metrics
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+
     // mapping-tool
     implementation 'org.mapstruct:mapstruct:1.6.3'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'

@@ -19,7 +19,7 @@ public class AuthController {
     public ResponseEntity<Void> authenticate(@RequestBody String initData) {
         AuthResponseDto response = telegramAuthService.authenticateByTelegram(initData);
         return ResponseEntity.ok()
-                .header(HttpHeaders.AUTHORIZATION,"Bearer " + response.accessToken())
+                .header("X-Access-Token", response.accessToken())
                 .build();
     }
 }

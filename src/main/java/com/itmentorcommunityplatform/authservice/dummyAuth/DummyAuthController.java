@@ -23,7 +23,7 @@ public class DummyAuthController {
     public ResponseEntity<Void> dummyAuth(@RequestBody @Validated DummyRequestDto requestDto){
         AuthResponseDto response = dummyAuthService.authenticateDummy(requestDto);
         return ResponseEntity.ok()
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + response.accessToken())
+                .header("X-Access-Token", response.accessToken())
                 .build();
     }
 }

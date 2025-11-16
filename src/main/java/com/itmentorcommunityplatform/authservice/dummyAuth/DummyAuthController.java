@@ -2,6 +2,7 @@ package com.itmentorcommunityplatform.authservice.dummyAuth;
 
 
 import com.itmentorcommunityplatform.authservice.auth.AuthResponseDto;
+import com.itmentorcommunityplatform.authservice.docs.dummyAuth.DummyAuthControllerDocs;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +21,7 @@ public class DummyAuthController {
     private final   DummyAuthService dummyAuthService;
 
     @PostMapping("/by-dummy")
+    @DummyAuthControllerDocs
     public ResponseEntity<Void> dummyAuth(@RequestBody @Validated DummyRequestDto requestDto){
         AuthResponseDto response = dummyAuthService.authenticateDummy(requestDto);
         return ResponseEntity.ok()

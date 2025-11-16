@@ -1,6 +1,7 @@
 package com.itmentorcommunityplatform.authservice.internalUser;
 
 
+import com.itmentorcommunityplatform.authservice.docs.internalUser.InternalUserControllerDocs;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ public class InternalUserController {
 
 
     @PostMapping("/internal/user")
+    @InternalUserControllerDocs
     public ResponseEntity<Void> upsertUser(@RequestBody @Valid UserUpsertRequestDto requestDto){
         internalUserService.upsertUser(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();

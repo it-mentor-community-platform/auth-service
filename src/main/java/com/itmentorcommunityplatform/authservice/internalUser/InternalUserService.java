@@ -21,20 +21,25 @@ public class InternalUserService {
     private final UserRoleRepository userRoleRepository;
 
     @Transactional
-    public void upsertUser(UserUpsertRequestDto requestDto) {
+    public InternalUserResultUpsertDto upsertUser(UserUpsertRequestDto requestDto) {
         var telegramId = requestDto.telegramUserId();
         var rolesNames = requestDto.roles();
 
 
-        var user = userRepository.findByTelegramUserId(telegramId)
-                .orElseGet(() -> {
-                    User newUser = new User();
-                    newUser.setTelegramUserId(telegramId);
-                    userRepository.save(newUser);
-                    log.info("New user created with id={}", newUser.getId());
-                    return newUser;
-                });
+        var userOptional = userRepository.findByTelegramUserId(telegramId);
+        User user;
+        boolean created;
 
+        if (userOptional.isPresent()) {
+            user = userOptional.get();
+            created = false;
+        } else {
+            user = new User();
+            user.setTelegramUserId(telegramId);
+            userRepository.save(user);
+            created = true;
+            log.info("New user created with id={}", user.getId());
+        }
 
 
         var roles = roleRepository.findByNameIn(rolesNames);
@@ -51,5 +56,7 @@ public class InternalUserService {
         var rolesId = roles.stream().map(r -> r.getId()).toList();
         userRoleRepository.insertUserRole(user.getId(), rolesId);
         log.info("User_id and Roles_id were insert to Users_Roles table successfully.");
+
+        return new InternalUserResultUpsertDto(user.getTelegramUserId(), created);
     }
 }

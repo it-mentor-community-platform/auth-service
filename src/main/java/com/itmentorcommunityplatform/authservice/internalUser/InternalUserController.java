@@ -22,7 +22,10 @@ public class InternalUserController {
     @PostMapping("/internal/user")
     @InternalUserControllerDocs
     public ResponseEntity<Void> upsertUser(@RequestBody @Valid UserUpsertRequestDto requestDto){
-        internalUserService.upsertUser(requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        var result = internalUserService.upsertUser(requestDto);
+        return result.created()
+                ? ResponseEntity.status(HttpStatus.CREATED).build()
+                : ResponseEntity.ok().build();
+
     }
 }

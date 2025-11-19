@@ -24,4 +24,19 @@ public class UserRoleRepository {
                 });
     }
 
+    public List<String> findRolesByUserId(Integer userId) {
+        String sql = """
+        SELECT r.name
+        FROM users_roles ur
+        JOIN roles r ON r.id = ur.role_id
+        WHERE ur.user_id = ?
+        """;
+
+        return template.query(
+                sql,
+                (rs, rowNum) -> rs.getString("name"),
+                userId
+        );
+    }
+
 }

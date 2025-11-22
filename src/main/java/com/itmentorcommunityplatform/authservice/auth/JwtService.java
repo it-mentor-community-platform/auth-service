@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class JwtService {
@@ -22,12 +23,13 @@ public class JwtService {
         this.expirationMillis = expirationMillis * 60 * 1000;
     }
 
-    public String generateToken(Long telegramUserId){
+    public String generateToken(Long telegramUserId, List<String> roles){
         long now = System.currentTimeMillis();
         Date issuedAt = new Date(now);
         Date expiration = new Date(now + expirationMillis);
         return Jwts.builder()
                 .setSubject(String.valueOf(telegramUserId))
+                .claim("roles",roles)
                 .setIssuedAt(issuedAt)
                 .setExpiration(expiration)
                 .signWith(key, SignatureAlgorithm.HS256)

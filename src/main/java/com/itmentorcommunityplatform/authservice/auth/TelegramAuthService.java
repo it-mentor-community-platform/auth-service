@@ -1,8 +1,11 @@
 package com.itmentorcommunityplatform.authservice.auth;
 
+import com.itmentorcommunityplatform.authservice.entity.Role;
 import com.itmentorcommunityplatform.authservice.entity.User;
 import com.itmentorcommunityplatform.authservice.mapper.UserMapper;
+import com.itmentorcommunityplatform.authservice.repository.RoleRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRepository;
+import com.itmentorcommunityplatform.authservice.repository.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +20,7 @@ public class TelegramAuthService {
     private final TelegramInitDataValidator validator;
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final UserRoleRepository userRoleRepository;
     private final UserMapper userMapper;
 
     @Value("${telegram.init-data-expiration-seconds}")
@@ -32,7 +36,10 @@ public class TelegramAuthService {
             User user = userRepository.findByTelegramUserId(telegramUserId)
                     .orElseGet(() -> createNewUser(telegramUserId));
 
-            String token = jwtService.generateToken(telegramUserId);
+            var userRoles = userRoleRepository.findRolesByUserId(user.getId());
+            log.info("User Roles = {}",userRoles);
+
+            String token = jwtService.generateToken(telegramUserId,userRoles);
             log.info("JWT token generated for userId={}", user.getId());
 
             UserResponseDto userResponseDto = userMapper.toDto(user);

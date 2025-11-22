@@ -6,6 +6,7 @@ import com.itmentorcommunityplatform.authservice.auth.UserResponseDto;
 import com.itmentorcommunityplatform.authservice.entity.User;
 import com.itmentorcommunityplatform.authservice.mapper.UserMapper;
 import com.itmentorcommunityplatform.authservice.repository.UserRepository;
+import com.itmentorcommunityplatform.authservice.repository.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DummyAuthService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final UserRoleRepository userRoleRepository;
     private final UserMapper userMapper;
 
 
@@ -27,7 +29,9 @@ public class DummyAuthService {
             User user = userRepository.findById(requestDto.userId())
                     .orElseThrow(() -> new UserNotFoundException(requestDto.userId()));
 
-            String token = jwtService.generateToken(user.getTelegramUserId());
+            var userRoles = userRoleRepository.findRolesByUserId(user.getId());
+            log.info("User Roles = {}",userRoles);
+            String token = jwtService.generateToken(user.getTelegramUserId(),userRoles);
             log.info("JWT token generated for userId={}", user.getId());
 
             UserResponseDto userResponseDto = userMapper.toDto(user);

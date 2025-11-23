@@ -36,14 +36,20 @@
 
 ### Авторизация через Telegram
 `POST /api/auth/by-telegram`
+## Инструкция по тестированию 
+Для тестирования функционала в сервисе вам потребуется использовать токен бота,который можно получить в Secrets в гитхабе или написать лиду.После это воспользоваться тестовым ботом,который предлагет скапировать текущую `initData`,по этой ссылке - [telegram-bot](https://t.me/testtesttest111122233_bot/getdata)
+
+После этого использовать initData которую вы скопировали,в качестве тела запроса и не закрывать бота пока тестирование не будет завершено.
+
+При локальном тестировании использую docker 
+http://localhost:8081/api/auth/by-telegram
 
 **Request body:**
-```json
-{
-  "initDataRaw": "..."
-}
+```text/plain
+user=%7B%22id%22%3...
+```
 
 # Build and run Docker image
 
 docker build -t auth-service:local-stack .
-docker run -p 8080:8080 --env SPRING_PROFILES_ACTIVE=local-stack auth-service:local-stack
+docker run -p 8081:8080 --env SPRING_PROFILES_ACTIVE=local-stack auth-service:local-stack

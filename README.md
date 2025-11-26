@@ -43,7 +43,7 @@
 
 Время жизни initData - 6 минут, eсли не закрывать бота. Такое значение выставлено в настройках application-ide.yml.
 
-После этого использовать initData, которую вы скопировали, в качестве тела запроса и не закрывать бота пока тестирование не будет завершено.
+После этого использовать initData, которую вы скопировали, в качестве тела запроса, и не закрывать бота, пока тестирование не будет завершено.
 
 При локальном тестировании на docker, использовать - http://localhost:8081/api/auth/by-telegram
 
@@ -51,8 +51,3 @@
 ```text/plain
 user=%7B%22id%22%3...
 ```
-
-# Build and run Docker image
-
-docker build -t auth-service:local-stack .
-docker run -p 8081:8080 --env SPRING_PROFILES_ACTIVE=local-stack auth-service:local-stack

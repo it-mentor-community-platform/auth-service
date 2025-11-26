@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +20,8 @@ public class JwtService {
     public JwtService(
           @Value("${jwt.secret}") String secret,
           @Value("${jwt.expiration_minutes}")  long expirationMillis) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+        byte[] keyBytes = Base64.getDecoder().decode(secret);
+        this.key = Keys.hmacShaKeyFor(keyBytes);
         this.expirationMillis = expirationMillis * 60 * 1000;
     }
 

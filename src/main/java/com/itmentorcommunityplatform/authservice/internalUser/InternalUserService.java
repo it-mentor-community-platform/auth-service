@@ -2,6 +2,7 @@ package com.itmentorcommunityplatform.authservice.internalUser;
 
 import com.itmentorcommunityplatform.authservice.entity.Role;
 import com.itmentorcommunityplatform.authservice.entity.User;
+import com.itmentorcommunityplatform.authservice.kafka.AuthEventProducer;
 import com.itmentorcommunityplatform.authservice.repository.RoleRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRoleRepository;
@@ -19,6 +20,7 @@ public class InternalUserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
+    private final AuthEventProducer kafkaEventProducer;
 
     @Transactional
     public InternalUserResultUpsertDto upsertUser(UserUpsertRequestDto requestDto) {
@@ -56,6 +58,11 @@ public class InternalUserService {
         var rolesId = roles.stream().map(r -> r.getId()).toList();
         userRoleRepository.insertUserRole(user.getId(), rolesId);
         log.info("User_id and Roles_id were insert to Users_Roles table successfully.");
+
+        if (created) {
+            kafkaEventProducer.sendUserCreated(telegramId);
+            log.info("A message about creating the new user was sent to kafka.");
+        }
 
         return new InternalUserResultUpsertDto(user.getTelegramUserId(), created);
     }

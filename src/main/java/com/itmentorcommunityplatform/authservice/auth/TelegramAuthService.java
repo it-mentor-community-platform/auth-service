@@ -2,6 +2,7 @@ package com.itmentorcommunityplatform.authservice.auth;
 
 import com.itmentorcommunityplatform.authservice.entity.Role;
 import com.itmentorcommunityplatform.authservice.entity.User;
+import com.itmentorcommunityplatform.authservice.kafka.AuthEventProducer;
 import com.itmentorcommunityplatform.authservice.mapper.UserMapper;
 import com.itmentorcommunityplatform.authservice.repository.RoleRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRepository;
@@ -22,6 +23,7 @@ public class TelegramAuthService {
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserMapper userMapper;
+    private final AuthEventProducer kafkaEventProducer;
 
     @Value("${telegram.init-data-expiration-seconds}")
     private long expirationSeconds;
@@ -59,6 +61,8 @@ public class TelegramAuthService {
         newUser.setTelegramUserId(telegramUserId);
         User saved = userRepository.save(newUser);
         log.info("New user created with id={}", saved.getId());
+        kafkaEventProducer.sendUserCreated(telegramUserId);
+        log.info("A message about creating the new user was sent to kafka.");
         return saved;
     }
 }

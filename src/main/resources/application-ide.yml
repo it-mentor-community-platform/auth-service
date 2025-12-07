@@ -24,6 +24,9 @@ jwt:
   secret: 632eca39fc29068edc74133ca9cf8f40b4942191f80c0c78dd588835beb5f57b
   expiration_minutes: 30
 
+server:
+  port: 8080
+
 management:
   endpoints:
     web:

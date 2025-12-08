@@ -25,23 +25,18 @@ public class TelegramInitDataValidator {
     @Value("${telegram.bot-token}")
     private String botToken;
 
-    public Long extractTelegramUserIdFromInitData(String initData, long expirationSeconds) throws InvalidInitDataException {
-        Map<String, String> data = parseInitData(initData);
-
-        validateHash(data);
-        validateAuthDate(data, expirationSeconds);
-
-        long telegramUserId = extractTelegramUserId(data);
-        return telegramUserId;
-    }
-
-    public String extractTelegramUsernameFromInitData(
-            String initData, long expirationSeconds
-    ) throws InvalidInitDataException {
+    public TelegramInitData validateAndParse(String initData, long expirationSeconds)
+            throws InvalidInitDataException {
         Map<String, String> data = parseInitData(initData);
         validateHash(data);
         validateAuthDate(data, expirationSeconds);
-        return extractTelegramUsername(data);
+
+        Long telegramUserId = extractTelegramUserId(data);
+        String telegramUsername = extractTelegramUsername(data);
+
+        log.info("Successfully parsed Telegram initData: userId={}, username={}",
+                telegramUserId, telegramUsername);
+        return new TelegramInitData(telegramUserId, telegramUsername);
     }
 
     private Map<String, String> parseInitData(String initData) {

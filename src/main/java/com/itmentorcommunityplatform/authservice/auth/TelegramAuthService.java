@@ -30,8 +30,10 @@ public class TelegramAuthService {
     public AuthResponseDto authenticateByTelegram(String initData) {
         try {
             log.info("Starting Telegram authentication process...");
-            Long telegramUserId = validator.extractTelegramUserIdFromInitData(initData, expirationSeconds);
-            String telegramUsername = validator.extractTelegramUsernameFromInitData(initData, expirationSeconds);
+            var telegramInitData = validator.validateAndParse(initData, expirationSeconds);
+            String telegramUsername = telegramInitData.telegramUsername();
+            Long telegramUserId = telegramInitData.telegramUserId();
+
             log.info("InitData validated successfully for telegramUserId={}", telegramUserId);
 
             User user = userRepository.findByTelegramUserId(telegramUserId)

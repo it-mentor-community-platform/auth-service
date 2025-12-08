@@ -1,4 +1,4 @@
-### Dummy User  — Successful request
+### Dummy User  — Successful request 200
 POST http://localhost:8080/api/auth/by-dummy
 Content-Type: application/json
 

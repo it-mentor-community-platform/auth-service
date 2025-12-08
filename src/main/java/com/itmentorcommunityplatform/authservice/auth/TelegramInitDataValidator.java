@@ -1,7 +1,7 @@
 package com.itmentorcommunityplatform.authservice.auth;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.itmentorcommunityplatform.authservice.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.HmacAlgorithms;
@@ -25,7 +25,7 @@ public class TelegramInitDataValidator {
     @Value("${telegram.bot-token}")
     private String botToken;
 
-    public Long extractUserFromInitData(String initData, long expirationSeconds) throws InvalidInitDataException {
+    public Long extractTelegramUserIdFromInitData(String initData, long expirationSeconds) throws InvalidInitDataException {
         Map<String, String> data = parseInitData(initData);
 
         validateHash(data);
@@ -33,6 +33,15 @@ public class TelegramInitDataValidator {
 
         long telegramUserId = extractTelegramUserId(data);
         return telegramUserId;
+    }
+
+    public String extractTelegramUsernameFromInitData(
+            String initData, long expirationSeconds
+    ) throws InvalidInitDataException {
+        Map<String, String> data = parseInitData(initData);
+        validateHash(data);
+        validateAuthDate(data, expirationSeconds);
+        return extractTelegramUsername(data);
     }
 
     private Map<String, String> parseInitData(String initData) {
@@ -101,6 +110,23 @@ public class TelegramInitDataValidator {
             return objectMapper.readTree(userJson).get("id").asLong();
         } catch (Exception e) {
             throw new InvalidInitDataException("Invalid user JSON");
+        }
+    }
+
+    private String extractTelegramUsername(Map<String, String> data) {
+        try {
+            String userJson = data.get("user");
+            if (userJson == null)
+                return null;
+
+            JsonNode userNode = objectMapper.readTree(userJson);
+            if (userNode.has("username")) {
+                return userNode.get("username").asText(null);
+            }
+            return null;
+        } catch (Exception e) {
+            log.warn("Failed to extract username from user JSON", e);
+            return null;
         }
     }
 }

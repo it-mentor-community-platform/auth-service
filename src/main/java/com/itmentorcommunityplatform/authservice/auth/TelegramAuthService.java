@@ -1,10 +1,8 @@
 package com.itmentorcommunityplatform.authservice.auth;
 
-import com.itmentorcommunityplatform.authservice.entity.Role;
 import com.itmentorcommunityplatform.authservice.entity.User;
 import com.itmentorcommunityplatform.authservice.kafka.AuthEventProducer;
 import com.itmentorcommunityplatform.authservice.mapper.UserMapper;
-import com.itmentorcommunityplatform.authservice.repository.RoleRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +30,8 @@ public class TelegramAuthService {
     public AuthResponseDto authenticateByTelegram(String initData) {
         try {
             log.info("Starting Telegram authentication process...");
-            Long telegramUserId = validator.extractUserFromInitData(initData, expirationSeconds);
+            Long telegramUserId = validator.extractTelegramUserIdFromInitData(initData, expirationSeconds);
+            String telegramUsername = validator.extractTelegramUsernameFromInitData(initData, expirationSeconds);
             log.info("InitData validated successfully for telegramUserId={}", telegramUserId);
 
             User user = userRepository.findByTelegramUserId(telegramUserId)
@@ -41,7 +40,7 @@ public class TelegramAuthService {
             var userRoles = userRoleRepository.findRolesByUserId(user.getId());
             log.info("User Roles = {}",userRoles);
 
-            String token = jwtService.generateToken(telegramUserId,userRoles);
+            String token = jwtService.generateToken(telegramUserId, userRoles, telegramUsername);
             log.info("JWT token generated for userId={}", user.getId());
 
             UserResponseDto userResponseDto = userMapper.toDto(user);

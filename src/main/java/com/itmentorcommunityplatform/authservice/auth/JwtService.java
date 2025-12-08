@@ -1,5 +1,6 @@
 package com.itmentorcommunityplatform.authservice.auth;
 
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,15 +25,26 @@ public class JwtService {
         this.expirationMillis = expirationMillis * 60 * 1000;
     }
 
-    public String generateToken(Long telegramUserId, List<String> roles) {
+    public String generateToken(Long userId, List<String> roles, String telegramUsername) {
         long now = System.currentTimeMillis();
         Date issuedAt = new Date(now);
         Date expiration = new Date(now + expirationMillis);
-        return Jwts.builder()
-                .subject(String.valueOf(telegramUserId))
-                .claim("roles", roles).issuedAt(issuedAt)
+
+        JwtBuilder builder = Jwts.builder()
+                .subject(String.valueOf(userId))
+                .claim("roles", roles)
+                .issuedAt(issuedAt)
                 .expiration(expiration)
-                .signWith(key)
-                .compact();
+                .signWith(key);
+
+        if (telegramUsername != null && !telegramUsername.trim().isEmpty()) {
+            builder.claim("telegram_username", telegramUsername);
+        }
+
+        return builder.compact();
+    }
+
+    public String generateToken(Long userId, List<String> roles) {
+        return generateToken(userId, roles, null);
     }
 }

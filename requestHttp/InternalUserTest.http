@@ -1,5 +1,5 @@
 ### Internal User  — 201
-POST http://localhost:8080/api/auth/internal/user
+POST http://localhost:8081/api/auth/internal/user
 Content-Type: application/json
 // Написать новый telegram_user_id для успешного импорта нового пользователя вместе с его ролями
 
@@ -10,7 +10,7 @@ Content-Type: application/json
 ###
 
 ### Internal User  — 200
-POST http://localhost:8080/api/auth/internal/user
+POST http://localhost:8081/api/auth/internal/user
 Content-Type: application/json
 // Написать  telegram_user_id уже существующего пользователя для обновления ролей
 
@@ -21,7 +21,7 @@ Content-Type: application/json
 ###
 
 ### Internal User  — 400 Bad Request
-POST http://localhost:8080/api/auth/internal/user
+POST http://localhost:8081/api/auth/internal/user
 Content-Type: application/json
 
 {
@@ -31,7 +31,7 @@ Content-Type: application/json
 ###
 
 ### Internal User  — 400 Not Null
-POST http://localhost:8080/api/auth/internal/user
+POST http://localhost:8081/api/auth/internal/user
 Content-Type: application/json
 
 {

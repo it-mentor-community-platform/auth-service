@@ -48,7 +48,7 @@ public class DummyAuthService {
             throw new InvalidRoleException("Unknown roles: " + unknownRoles);
         }
         log.info("User Roles = {}", rolesNames);
-        String token = jwtService.generateToken(user.getTelegramUserId(), rolesNames);
+        String token = jwtService.generateToken(user.getTelegramUserId(), rolesNames, requestDto.telegramUsername());
         log.info("JWT token generated for userId={}", user.getId());
 
         UserResponseDto userResponseDto = userMapper.toDto(user);

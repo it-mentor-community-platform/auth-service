@@ -1,5 +1,7 @@
 package com.itmentorcommunityplatform.authservice.auth;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -30,21 +32,16 @@ public class JwtService {
         Date issuedAt = new Date(now);
         Date expiration = new Date(now + expirationMillis);
 
+
         JwtBuilder builder = Jwts.builder()
                 .subject(String.valueOf(userId))
                 .claim("roles", roles)
+                .claim("telegram_username", telegramUsername)
                 .issuedAt(issuedAt)
                 .expiration(expiration)
                 .signWith(key);
 
-        if (telegramUsername != null && !telegramUsername.trim().isEmpty()) {
-            builder.claim("telegram_username", telegramUsername);
-        }
-
         return builder.compact();
     }
 
-    public String generateToken(Long userId, List<String> roles) {
-        return generateToken(userId, roles, null);
-    }
 }

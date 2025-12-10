@@ -14,7 +14,12 @@ public record DummyRequestDto(
         @JsonProperty("user_id")
         @Min(1)
         Integer userId,
+
         @NotEmpty
         @JsonProperty("roles")
-        List<String> rolesNames) {
+        List<String> rolesNames,
+
+        @NotEmpty
+        @JsonProperty("telegram_username")
+        String telegramUsername) {
 }

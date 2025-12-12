@@ -1,31 +1,45 @@
 ### Dummy User  — Successful request 200
-POST http://localhost:8080/api/auth/by-dummy
+POST http://localhost:8081/api/auth/by-dummy
 Content-Type: application/json
 
 {
-  "user_id": 1,
-  "roles": ["ADMIN","STUDENT"]
+  "user_id": 3,
+  "roles": ["ADMIN","STUDENT"],
+  "telegram_username": "user"
 }
 ###
 
 
 ### Dummy User  — 400
-POST http://localhost:8080/api/auth/by-dummy
+POST http://localhost:8081/api/auth/by-dummy
 Content-Type: application/json
 
 {
   "user_id": 1,
-  "roles": []
+  "roles": [],
+  "telegram_username": "user"
 }
 ###
 
 ### Dummy User  — 400
-POST http://localhost:8080/api/auth/by-dummy
+POST http://localhost:8081/api/auth/by-dummy
 Content-Type: application/json
 
 {
   "user_id": -2,
-  "roles": ["ADMIN","STUDENT"]
+  "roles": ["ADMIN","STUDENT"],
+  "telegram_username": "user"
+}
+###
+
+### Dummy User  — 400
+POST http://localhost:8081/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "roles": ["ADMIN","STUDENT"],
+  "telegram_username": ""
 }
 ###
 

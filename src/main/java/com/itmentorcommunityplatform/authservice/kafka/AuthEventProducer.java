@@ -14,7 +14,7 @@ public class AuthEventProducer {
      @Value("${kafka.topic.auth-user-created}")
      private String authUserCreatedTopic;
 
-     public void sendUserCreated(long telegramUserId) {
-         kafkaTemplate.send(authUserCreatedTopic, new UserCreatedEvent(telegramUserId));
+     public void sendUserCreated(UserCreatedEvent userCreatedEvent) {
+         kafkaTemplate.send(authUserCreatedTopic, userCreatedEvent);
      }
 }

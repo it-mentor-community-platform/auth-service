@@ -33,10 +33,12 @@ public class TelegramInitDataValidator {
 
         Long telegramUserId = extractTelegramUserId(data);
         String telegramUsername = extractTelegramUsername(data);
+        String firstName = extractFirstName(data);
+        String lastName = extractLastName(data);
 
-        log.info("Successfully parsed Telegram initData: userId={}, username={}",
-                telegramUserId, telegramUsername);
-        return new TelegramInitData(telegramUserId, telegramUsername);
+        log.info("Successfully parsed Telegram initData: userId={}, username={}, firstName={}, lastName={}",
+                telegramUserId, telegramUsername, firstName, lastName);
+        return new TelegramInitData(telegramUserId, telegramUsername, firstName, lastName);
     }
 
     private Map<String, String> parseInitData(String initData) {
@@ -121,6 +123,40 @@ public class TelegramInitDataValidator {
             return null;
         } catch (Exception e) {
             log.warn("Failed to extract username from user JSON", e);
+            return null;
+        }
+    }
+
+    private String extractFirstName(Map<String, String> data) {
+        try {
+            String userJson = data.get("user");
+            if (userJson == null)
+                return null;
+
+            JsonNode userNode = objectMapper.readTree(userJson);
+            if (userNode.has("first_name")) {
+                return userNode.get("first_name").asText(null);
+            }
+            return null;
+        } catch (Exception e) {
+            log.warn("Failed to extract first_name from user JSON", e);
+            return null;
+        }
+    }
+
+    private String extractLastName(Map<String, String> data) {
+        try {
+            String userJson = data.get("user");
+            if (userJson == null)
+                return null;
+
+            JsonNode userNode = objectMapper.readTree(userJson);
+            if (userNode.has("last_name")) {
+                return userNode.get("last_name").asText(null);
+            }
+            return null;
+        } catch (Exception e) {
+            log.warn("Failed to extract last_name from user JSON", e);
             return null;
         }
     }

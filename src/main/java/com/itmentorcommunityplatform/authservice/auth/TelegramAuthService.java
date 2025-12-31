@@ -2,6 +2,7 @@ package com.itmentorcommunityplatform.authservice.auth;
 
 import com.itmentorcommunityplatform.authservice.entity.User;
 import com.itmentorcommunityplatform.authservice.kafka.AuthEventProducer;
+import com.itmentorcommunityplatform.authservice.kafka.UserCreatedEvent;
 import com.itmentorcommunityplatform.authservice.mapper.UserMapper;
 import com.itmentorcommunityplatform.authservice.repository.UserRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRoleRepository;
@@ -30,14 +31,16 @@ public class TelegramAuthService {
     public AuthResponseDto authenticateByTelegram(String initData) {
         try {
             log.info("Starting Telegram authentication process...");
-            var telegramInitData = validator.validateAndParse(initData, expirationSeconds);
+            TelegramInitData telegramInitData = validator.validateAndParse(initData, expirationSeconds);
             String telegramUsername = telegramInitData.telegramUsername();
             Long telegramUserId = telegramInitData.telegramUserId();
+            String firstName = telegramInitData.firstName();
+            String lastName = telegramInitData.lastName();
 
             log.info("InitData validated successfully for telegramUserId={}", telegramUserId);
 
             User user = userRepository.findByTelegramUserId(telegramUserId)
-                    .orElseGet(() -> createNewUser(telegramUserId));
+                    .orElseGet(() -> createNewUser(telegramUserId, telegramUsername, firstName, lastName));
 
             var userRoles = userRoleRepository.findRolesByUserId(user.getId());
             log.info("User Roles = {}",userRoles);
@@ -57,12 +60,12 @@ public class TelegramAuthService {
         }
     }
 
-    private User createNewUser(Long telegramUserId) {
+    private User createNewUser(Long telegramUserId, String telegramUsername, String firstName, String lastName) {
         User newUser = new User();
         newUser.setTelegramUserId(telegramUserId);
         User saved = userRepository.save(newUser);
         log.info("New user created with id={}", saved.getId());
-        kafkaEventProducer.sendUserCreated(telegramUserId);
+        kafkaEventProducer.sendUserCreated(new UserCreatedEvent(telegramUserId, telegramUsername, firstName, lastName));
         log.info("A message about creating the new user was sent to kafka.");
         return saved;
     }

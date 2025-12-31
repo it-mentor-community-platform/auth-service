@@ -3,6 +3,7 @@ package com.itmentorcommunityplatform.authservice.internalUser;
 import com.itmentorcommunityplatform.authservice.entity.Role;
 import com.itmentorcommunityplatform.authservice.entity.User;
 import com.itmentorcommunityplatform.authservice.kafka.AuthEventProducer;
+import com.itmentorcommunityplatform.authservice.kafka.UserCreatedEvent;
 import com.itmentorcommunityplatform.authservice.repository.RoleRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRoleRepository;
@@ -60,7 +61,7 @@ public class InternalUserService {
         log.info("User_id and Roles_id were insert to Users_Roles table successfully.");
 
         if (created) {
-            kafkaEventProducer.sendUserCreated(telegramId);
+            kafkaEventProducer.sendUserCreated(new UserCreatedEvent(telegramId, null, null, null));
             log.info("A message about creating the new user was sent to kafka.");
         }
 

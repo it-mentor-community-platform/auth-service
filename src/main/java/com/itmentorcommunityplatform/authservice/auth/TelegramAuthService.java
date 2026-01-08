@@ -32,6 +32,7 @@ public class TelegramAuthService {
         try {
             log.info("Starting Telegram authentication process...");
             TelegramInitData telegramInitData = validator.validateAndParse(initData, expirationSeconds);
+
             String telegramUsername = telegramInitData.telegramUsername();
             Long telegramUserId = telegramInitData.telegramUserId();
             String firstName = telegramInitData.firstName();

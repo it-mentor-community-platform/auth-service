@@ -31,12 +31,12 @@ public class TelegramInitDataValidator {
         validateHash(data);
         validateAuthDate(data, expirationSeconds);
 
-        Long telegramUserId = extractTelegramUserId(data);
-        String telegramUsername = extractTelegramUsername(data);
+        TelegramInitData userInitData = extractUserData(data);
 
-        log.info("Successfully parsed Telegram initData: userId={}, username={}",
-                telegramUserId, telegramUsername);
-        return new TelegramInitData(telegramUserId, telegramUsername);
+        log.info("Successfully parsed Telegram initData: userId={}, username={}, firstName={}, lastName={}",
+                userInitData.telegramUserId(), userInitData.telegramUsername(), userInitData.firstName(), userInitData.lastName());
+
+        return userInitData;
     }
 
     private Map<String, String> parseInitData(String initData) {
@@ -58,7 +58,6 @@ public class TelegramInitDataValidator {
         log.info("Parsed initData map");
         return map;
     }
-
 
     private void validateHash(Map<String, String> data) {
         String receivedHash = data.remove("hash");
@@ -93,35 +92,26 @@ public class TelegramInitDataValidator {
             throw new InvalidInitDataException("Invalid auth_date: from the future");
 
         if (now - authDate > expirationSeconds)
-            throw new InvalidInitDataException("InitData expired");
+            throw new  InvalidInitDataException("InitData expired");
     }
 
-    private long extractTelegramUserId(Map<String, String> data) {
+    private TelegramInitData extractUserData(Map<String, String> data){
         try {
             String userJson = data.get("user");
-            if (userJson == null)
+            if (userJson == null){
                 throw new InvalidInitDataException("Missing user");
+            }
 
-            return objectMapper.readTree(userJson).get("id").asLong();
+            JsonNode userData = objectMapper.readTree(userJson);
+
+            long id = userData.get("id").asLong();
+            String username = userData.get("username").asText(null);
+            String firstName = userData.get("first_name").asText(null);
+            String lastName = userData.get("last_name").asText(null);
+
+            return new TelegramInitData(id, username, firstName, lastName);
         } catch (Exception e) {
             throw new InvalidInitDataException("Invalid user JSON");
-        }
-    }
-
-    private String extractTelegramUsername(Map<String, String> data) {
-        try {
-            String userJson = data.get("user");
-            if (userJson == null)
-                return null;
-
-            JsonNode userNode = objectMapper.readTree(userJson);
-            if (userNode.has("username")) {
-                return userNode.get("username").asText(null);
-            }
-            return null;
-        } catch (Exception e) {
-            log.warn("Failed to extract username from user JSON", e);
-            return null;
         }
     }
 }

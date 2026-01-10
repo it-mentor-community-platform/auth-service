@@ -32,6 +32,8 @@ public class AdminService {
 
         checkUserRole(httpRequest, Role.ADMIN);
 
+        userRoleRepository.lockUserByTelegramId(telegramUserId);
+
         List<Role> targetRoles = dto.roles().stream()
                 .map(this::parseRole)
                 .toList();

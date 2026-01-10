@@ -34,13 +34,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponseDto> handleResponseStatusException(
             ResponseStatusException ex,
-            HttpServletRequest request) {
+            HttpServletRequest httpRequest) {
 
         log.warn("Response status exception: {}", ex.getReason());
 
         return ResponseEntity
                 .status(ex.getStatusCode())
-                .body(buildError((HttpStatus) ex.getStatusCode(), ex.getReason(), request));
+                .body(buildError((HttpStatus) ex.getStatusCode(), ex.getReason(), httpRequest));
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)

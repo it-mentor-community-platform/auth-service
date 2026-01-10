@@ -1,5 +1,6 @@
 package com.itmentorcommunityplatform.authservice.admin;
 
+import com.itmentorcommunityplatform.authservice.docs.admin.UpdateUserRolesDocs;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ public class AdminController {
     private final AdminService adminService;
 
     @PatchMapping("/user")
+    @UpdateUserRolesDocs
     public ResponseEntity<Void> updateUserRoles(
             @RequestParam(name = "telegram_user_id") Long telegramUserId,
             @Valid @RequestBody UpdateUserRolesRequest rolesRequest,

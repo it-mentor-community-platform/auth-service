@@ -1,0 +1,62 @@
+### 200 - Успешное обновление ( У пользователя не должно быть роли 'ADMIN' в БД )
+PATCH http://localhost:8081/api/auth/admin/user?telegram_user_id=7634452355
+Content-Type: application/json
+X-User-Roles: ADMIN
+
+{
+  "roles": ["STUDENT", "MENTOR"]
+}
+
+### 400 - Невалидная роль
+PATCH http://localhost:8081/api/auth/admin/user?telegram_user_id=7634452355
+Content-Type: application/json
+X-User-Roles: ADMIN
+
+{
+  "roles": ["DOTER", "STUDENT"]
+}
+
+### 400 - Отсутствует telegram_user_id
+PATCH http://localhost:8081/api/auth/admin/user
+Content-Type: application/json
+X-User-Roles: ADMIN
+
+{
+  "roles": ["STUDENT"]
+}
+
+### 400 - Невалидный тип telegram_user_id
+PATCH http://localhost:8081/api/auth/admin/user?telegram_user_id=sdfsdfdsf
+Content-Type: application/json
+X-User-Roles: ADMIN
+
+{
+  "roles": ["STUDENT"]
+}
+
+### 403 - У вызывающего юзера нет роли ADMIN
+PATCH http://localhost:8081/api/auth/admin/user?telegram_user_id=545249849
+Content-Type: application/json
+X-User-Roles: STUDENT
+
+{
+  "roles": ["STUDENT"]
+}
+
+### 403 - попытка добавить/убрать роль ADMIN у себя или другого пользователя ( у юзера должна быть роль ADMIN в БД)
+PATCH http://localhost:8081/api/auth/admin/user?telegram_user_id=7634452355
+Content-Type: application/json
+X-User-Roles: ADMIN
+
+{
+  "roles": ["STUDENT", "MENTOR"]
+}
+
+### 404 - Юзера не существует
+PATCH http://localhost:8081/api/auth/admin/user?telegram_user_id=1111111111
+Content-Type: application/json
+X-User-Roles: ADMIN
+
+{
+  "roles": ["STUDENT"]
+}

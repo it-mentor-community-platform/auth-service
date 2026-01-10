@@ -39,4 +39,11 @@ public class UserRoleRepository {
         );
     }
 
+    public void dropAllRolesExceptAdmin(int userId) {
+        String sql = """
+        DELETE FROM users_roles
+        WHERE user_id = ? AND role_id != (SELECT id FROM roles WHERE name = 'ADMIN')
+        """;
+        template.update(sql, userId);
+    }
 }

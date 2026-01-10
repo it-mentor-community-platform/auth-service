@@ -6,4 +6,8 @@ public class UserNotFoundException extends RuntimeException {
   public UserNotFoundException(@NotNull Integer userId) {
     super("User with id = " + userId + " not found");
   }
+
+  public UserNotFoundException() {
+    super("User not found");
+  }
 }

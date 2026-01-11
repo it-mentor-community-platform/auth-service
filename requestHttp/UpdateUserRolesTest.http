@@ -52,6 +52,14 @@ X-User-Roles: ADMIN
   "roles": ["STUDENT", "MENTOR"]
 }
 
+### 403 - Заголовок не передан
+PATCH http://localhost:8081/api/auth/admin/user?telegram_user_id=7634452355
+Content-Type: application/json
+
+{
+  "roles": ["STUDENT"]
+}
+
 ### 404 - Юзера не существует
 PATCH http://localhost:8081/api/auth/admin/user?telegram_user_id=1111111111
 Content-Type: application/json

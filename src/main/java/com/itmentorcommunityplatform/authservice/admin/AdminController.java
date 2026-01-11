@@ -1,11 +1,11 @@
 package com.itmentorcommunityplatform.authservice.admin;
 
 import com.itmentorcommunityplatform.authservice.docs.admin.UpdateUserRolesDocs;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth/admin")
@@ -18,10 +18,10 @@ public class AdminController {
     @UpdateUserRolesDocs
     public ResponseEntity<Void> updateUserRoles(
             @RequestParam(name = "telegram_user_id") Long telegramUserId,
-            @Valid @RequestBody UpdateUserRolesRequest rolesRequest,
-            HttpServletRequest httpRequest
+            @RequestHeader("X-User-Roles") List<String> headerRoles,
+            @RequestBody UpdateUserRolesRequest request
     ) {
-        adminService.changeUserRoles(telegramUserId, rolesRequest, httpRequest);
+        adminService.changeUserRoles(telegramUserId, headerRoles, request);
 
         return ResponseEntity.ok().build();
     }

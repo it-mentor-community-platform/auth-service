@@ -6,7 +6,6 @@ import com.itmentorcommunityplatform.authservice.entity.User;
 import com.itmentorcommunityplatform.authservice.internalUser.InvalidRoleException;
 import com.itmentorcommunityplatform.authservice.repository.UserRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRoleRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -27,14 +25,12 @@ public class AdminService {
 
     @Transactional
     public void changeUserRoles(Long telegramUserId,
-                                UpdateUserRolesRequest dto,
-                                HttpServletRequest httpRequest) {
+                                List<String> headerRoles,
+                                UpdateUserRolesRequest request) {
 
-        checkUserRole(httpRequest, Role.ADMIN);
+        verifyIsAdmin(headerRoles);
 
-        userRoleRepository.lockUserByTelegramId(telegramUserId);
-
-        List<Role> targetRoles = dto.roles().stream()
+        List<Role> targetRoles = request.roles().stream()
                 .map(this::parseRole)
                 .toList();
 
@@ -44,20 +40,20 @@ public class AdminService {
                     return new UserNotFoundException();
                 });
 
+        userRoleRepository.lockUserByTelegramId(telegramUserId);
+
         Integer userId = user.getId();
 
         List<String> userRoles = userRoleRepository.findRolesByUserId(userId);
-        boolean isCurrentlyAdmin = userRoles.contains(Role.ADMIN.name());
-        boolean wantsToBeAdmin = targetRoles.contains(Role.ADMIN);
 
-        if (isCurrentlyAdmin != wantsToBeAdmin) {
-            log.warn("Forbidden: Attempt to modify ADMIN role for userId: {}. Operation rejected.", userId);
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                    "Modifying ADMIN role is not allowed");
-        }
+        preventAdminRoleChange(userRoles, targetRoles);
 
-        log.info("Dropping old roles for userId: {}", userId);
+        refreshUserRoles(userId, targetRoles);
+    }
+
+    private void refreshUserRoles(Integer userId, List<Role> targetRoles) {
         userRoleRepository.dropAllRolesExceptAdmin(userId);
+        log.info("Dropping old roles for userId: {}", userId);
 
         List<Integer> roleId = targetRoles.stream()
                 .filter(role -> role != Role.ADMIN)
@@ -72,21 +68,25 @@ public class AdminService {
         }
     }
 
-    private void checkUserRole(HttpServletRequest request, Role role) {
-        String rolesHeader = request.getHeader("X-User-Roles");
+    private void preventAdminRoleChange(List<String> userRoles, List<Role> targetRoles) {
+        boolean isCurrentlyAdmin = userRoles.contains(Role.ADMIN.name());
+        boolean wantsToBeAdmin = targetRoles.contains(Role.ADMIN);
 
-        if (rolesHeader == null) {
-            log.warn("Access denied: No roles provided in request headers");
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No roles provided");
+        if (isCurrentlyAdmin != wantsToBeAdmin) {
+            log.warn("Forbidden: Attempt to modify ADMIN role. Operation rejected.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Modifying ADMIN role is not allowed");
         }
+    }
 
-        boolean hasRole = Arrays.stream(rolesHeader.split(","))
-                .map(String::trim)
-                .anyMatch(r -> r.equalsIgnoreCase(role.name()));
+    private void verifyIsAdmin(List<String> roles) {
+        boolean isAdmin = roles.stream()
+                .map(this::parseRole)
+                .anyMatch(Role.ADMIN::equals);
 
-        if (!hasRole) {
-            log.warn("Access denied: Requester does not have required role: {}", role);
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Missing role: " + role);
+        if (!isAdmin) {
+            log.warn("Access denied: Requester does not have required role: {}", Role.ADMIN.name());
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Missing role: " + Role.ADMIN.name());
         }
     }
 

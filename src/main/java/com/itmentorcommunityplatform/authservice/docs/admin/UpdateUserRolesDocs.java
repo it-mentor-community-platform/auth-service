@@ -1,6 +1,7 @@
 package com.itmentorcommunityplatform.authservice.docs.admin;
 
 import com.itmentorcommunityplatform.authservice.admin.UpdateUserRolesRequest;
+import com.itmentorcommunityplatform.authservice.advice.ErrorResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -27,17 +28,11 @@ import java.lang.annotation.Target;
                 1. Only users with header `X-User-Roles: ADMIN` can access this.
                 2. It is **prohibited** to add or remove the `ADMIN` role.
                 3. If the target user is already an ADMIN, their ADMIN role will be preserved, but other roles can be updated.
-                
-                ### Constraints:
-                * **400**: Invalid role name, missing `telegram_user_id`, or wrong ID format.
-                * **403**: Requester is not an admin OR attempt to modify ADMIN status.
-                * **404**: Target user not found.
                 """,
         parameters = {
                 @Parameter(
                         name = "telegram_user_id",
                         in = ParameterIn.QUERY,
-                        description = "Telegram ID of the user whose roles are being updated",
                         required = true,
                         schema = @Schema(type = "integer", format = "int64"),
                         example = "7634452355"
@@ -45,7 +40,6 @@ import java.lang.annotation.Target;
                 @Parameter(
                         name = "X-User-Roles",
                         in = ParameterIn.HEADER,
-                        description = "Roles of the requester (must include ADMIN)",
                         required = true,
                         schema = @Schema(type = "string"),
                         example = "ADMIN"
@@ -58,7 +52,11 @@ import java.lang.annotation.Target;
                         schema = @Schema(implementation = UpdateUserRolesRequest.class),
                         examples = @ExampleObject(
                                 name = "Standard role update",
-                                value = "{\"roles\": [\"STUDENT\", \"MENTOR\"]}"
+                                value = """
+                                        {
+                                          "roles": ["STUDENT", "MENTOR"]
+                                        }
+                                        """
                         )
                 )
         )
@@ -66,7 +64,7 @@ import java.lang.annotation.Target;
 @ApiResponses({
         @ApiResponse(
                 responseCode = "200",
-                description = "Roles updated successfully (ADMIN role status remained unchanged)",
+                description = "Roles updated successfully",
                 content = @Content
         ),
         @ApiResponse(
@@ -74,10 +72,44 @@ import java.lang.annotation.Target;
                 description = "Bad Request: Validation failed",
                 content = @Content(
                         mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponseDto.class),
                         examples = {
-                                @ExampleObject(name = "Invalid role", value = "{\"message\":\"Invalid role: DOTER\"}"),
-                                @ExampleObject(name = "Missing parameter", value = "{\"message\":\"Parameter is missing: telegram_user_id\"}"),
-                                @ExampleObject(name = "Invalid ID type", value = "{\"message\":\"Invalid parameter type\"}")
+                                @ExampleObject(
+                                        name = "Invalid role",
+                                        value = """
+                                                {
+                                                  "timestamp": "2026-01-10T16:42:47.629Z",
+                                                  "status": 400,
+                                                  "error": "Bad Request",
+                                                  "message": "Invalid role: DOTER",
+                                                  "path": "/api/auth/admin/user"
+                                                }
+                                                """
+                                ),
+                                @ExampleObject(
+                                        name = "Missing parameter",
+                                        value = """
+                                                {
+                                                  "timestamp": "2026-01-10T16:42:47.629Z",
+                                                  "status": 400,
+                                                  "error": "Bad Request",
+                                                  "message": "Parameter is missing: telegram_user_id",
+                                                  "path": "/api/auth/admin/user"
+                                                }
+                                                """
+                                ),
+                                @ExampleObject(
+                                        name = "Invalid ID type",
+                                        value = """
+                                                {
+                                                  "timestamp": "2026-01-10T16:42:47.629Z",
+                                                  "status": 400,
+                                                  "error": "Bad Request",
+                                                  "message": "Invalid parameter type",
+                                                  "path": "/api/auth/admin/user"
+                                                }
+                                                """
+                                )
                         }
                 )
         ),
@@ -86,9 +118,44 @@ import java.lang.annotation.Target;
                 description = "Forbidden: Access denied or role restriction",
                 content = @Content(
                         mediaType = "application/json",
+                        schema = @Schema(implementation = ErrorResponseDto.class),
                         examples = {
-                                @ExampleObject(name = "Requester not Admin", value = "{\"message\":\"Missing role: ADMIN\"}"),
-                                @ExampleObject(name = "Modify ADMIN prohibited", value = "{\"message\":\"Modifying ADMIN role is not allowed\"}")
+                                @ExampleObject(
+                                        name = "Requester not Admin",
+                                        value = """
+                                                {
+                                                  "timestamp": "2026-01-10T16:42:47.629Z",
+                                                  "status": 403,
+                                                  "error": "Forbidden",
+                                                  "message": "Missing role: ADMIN",
+                                                  "path": "/api/auth/admin/user"
+                                                }
+                                                """
+                                ),
+                                @ExampleObject(
+                                        name = "Modify ADMIN prohibited",
+                                        value = """
+                                                {
+                                                  "timestamp": "2026-01-10T16:42:47.629Z",
+                                                  "status": 403,
+                                                  "error": "Forbidden",
+                                                  "message": "Modifying ADMIN role is not allowed",
+                                                  "path": "/api/auth/admin/user"
+                                                }
+                                                """
+                                ),
+                                @ExampleObject(
+                                        name = "Header missing",
+                                        value = """
+                                                {
+                                                  "timestamp": "2026-01-10T16:42:47.629Z",
+                                                  "status": 403,
+                                                  "error": "Forbidden",
+                                                  "message": "Required header 'X-User-Roles' is missing",
+                                                  "path": "/api/auth/admin/user"
+                                                }
+                                                """
+                                )
                         }
                 )
         ),
@@ -97,7 +164,19 @@ import java.lang.annotation.Target;
                 description = "User not found",
                 content = @Content(
                         mediaType = "application/json",
-                        schema = @Schema(example = "{\"message\":\"User not found\"}")
+                        schema = @Schema(implementation = ErrorResponseDto.class),
+                        examples = @ExampleObject(
+                                name = "User not found",
+                                value = """
+                                        {
+                                          "timestamp": "2026-01-10T16:42:47.629Z",
+                                          "status": 404,
+                                          "error": "Not Found",
+                                          "message": "User not found",
+                                          "path": "/api/auth/admin/user"
+                                        }
+                                        """
+                        )
                 )
         )
 })

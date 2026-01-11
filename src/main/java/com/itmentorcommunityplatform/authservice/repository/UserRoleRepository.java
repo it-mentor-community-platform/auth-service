@@ -26,11 +26,11 @@ public class UserRoleRepository {
 
     public List<String> findRolesByUserId(Integer userId) {
         String sql = """
-        SELECT r.name
-        FROM users_roles ur
-        JOIN roles r ON r.id = ur.role_id
-        WHERE ur.user_id = ?
-        """;
+                SELECT r.name
+                FROM users_roles ur
+                JOIN roles r ON r.id = ur.role_id
+                WHERE ur.user_id = ?
+                """;
 
         return template.query(
                 sql,
@@ -39,4 +39,20 @@ public class UserRoleRepository {
         );
     }
 
+    public void dropAllRolesExceptAdmin(int userId) {
+        String sql = """
+                DELETE FROM users_roles
+                WHERE user_id = ? AND role_id != (SELECT id FROM roles WHERE name = 'ADMIN')
+                """;
+        template.update(sql, userId);
+    }
+
+    public void lockUserByTelegramId(Long telegramUserId) {
+        String sql = """
+                SELECT id 
+                FROM users
+                WHERE telegram_user_id = ? FOR UPDATE
+                """;
+        template.queryForObject(sql, Integer.class, telegramUserId);
+    }
 }

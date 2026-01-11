@@ -1,7 +1,5 @@
 package com.itmentorcommunityplatform.authservice.auth;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ClaimsBuilder;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -43,5 +41,4 @@ public class JwtService {
 
         return builder.compact();
     }
-
 }

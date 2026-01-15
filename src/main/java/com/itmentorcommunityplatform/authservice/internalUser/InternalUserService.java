@@ -2,16 +2,19 @@ package com.itmentorcommunityplatform.authservice.internalUser;
 
 import com.itmentorcommunityplatform.authservice.entity.Role;
 import com.itmentorcommunityplatform.authservice.entity.User;
+import com.itmentorcommunityplatform.authservice.entity.UserRole;
 import com.itmentorcommunityplatform.authservice.kafka.AuthEventProducer;
 import com.itmentorcommunityplatform.authservice.kafka.UserCreatedEvent;
 import com.itmentorcommunityplatform.authservice.repository.RoleRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRoleRepository;
+import com.itmentorcommunityplatform.authservice.repository.UserWithRolesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +25,7 @@ public class InternalUserService {
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final AuthEventProducer kafkaEventProducer;
+    private final UserWithRolesRepository userWithRolesRepository;
 
     @Transactional
     public InternalUserResultUpsertDto upsertUser(UserUpsertRequestDto requestDto) {
@@ -66,5 +70,63 @@ public class InternalUserService {
         }
 
         return new InternalUserResultUpsertDto(user.getTelegramUserId(), created);
+    }
+
+    public List<UserWithRolesDto> getListUsers(List<Long> telegramUserIds) {
+
+        validation(telegramUserIds);
+
+        List<UserWithRolesDto> userWithRolesDto = new ArrayList<>();
+
+        List<User> listUsers = userRepository.findAllByTelegramUserIdIn(telegramUserIds);
+
+        List<Integer> listUserIds = listUsers.stream().map(User::getId).toList();
+
+        List<UserRole> listUserRoles = userWithRolesRepository.findByUserIdIn(listUserIds);
+
+        Map<Integer, List<Integer>> mapUserIdToRoleIds = listUserRoles.stream()
+                .collect(Collectors.groupingBy(
+                        UserRole::getUserId,
+                        Collectors.mapping(UserRole::getRoleId, Collectors.toList())
+                ));
+
+        Set<Integer> allRoleIds = mapUserIdToRoleIds.values().stream()
+                .flatMap(List::stream)
+                .collect(Collectors.toSet());
+
+        List<Role> listRoles = roleRepository.findAllByIdIn(allRoleIds);
+
+        Map<Integer, String> mapRoles = listRoles.stream()
+                .collect(Collectors.toMap(Role::getId, Role::getName));
+
+
+        for (User user : listUsers) {
+            List<String> listUserRoleNames = mapUserIdToRoleIds
+                    .getOrDefault(user.getId(), Collections.emptyList())
+                    .stream()
+                    .map(mapRoles::get)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            userWithRolesDto.add(new UserWithRolesDto(user.getTelegramUserId(), listUserRoleNames));
+        }
+
+        return userWithRolesDto;
+    }
+
+    private  void validation(List<Long> telegramUserIds){
+
+        if (telegramUserIds.isEmpty() ) {
+            throw new IllegalArgumentException("telegram_user_ids must not be empty");
+        }
+
+        for (Long id : telegramUserIds) {
+            if (id == null ) {
+                throw new IllegalArgumentException("telegram_user_ids must not contain nulls");
+            }
+            if (id<=0){
+                throw new IllegalArgumentException("telegram_user_ids must be positive");
+            }
+        }
     }
 }

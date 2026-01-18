@@ -11,6 +11,7 @@ import com.itmentorcommunityplatform.authservice.repository.UserRoleRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserWithRolesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,57 +75,23 @@ public class InternalUserService {
 
     public List<UserWithRolesDto> getListUsers(List<Long> telegramUserIds) {
 
-        validation(telegramUserIds);
+        validate(telegramUserIds);
 
-        List<UserWithRolesDto> userWithRolesDto = new ArrayList<>();
+        return userWithRolesRepository.findUserWithRolesByTelegramUserIds(telegramUserIds).stream().toList();
 
-        List<User> listUsers = userRepository.findAllByTelegramUserIdIn(telegramUserIds);
-
-        List<Integer> listUserIds = listUsers.stream().map(User::getId).toList();
-
-        List<UserRole> listUserRoles = userWithRolesRepository.findByUserIdIn(listUserIds);
-
-        Map<Integer, List<Integer>> mapUserIdToRoleIds = listUserRoles.stream()
-                .collect(Collectors.groupingBy(
-                        UserRole::getUserId,
-                        Collectors.mapping(UserRole::getRoleId, Collectors.toList())
-                ));
-
-        Set<Integer> allRoleIds = mapUserIdToRoleIds.values().stream()
-                .flatMap(List::stream)
-                .collect(Collectors.toSet());
-
-        List<Role> listRoles = roleRepository.findAllByIdIn(allRoleIds);
-
-        Map<Integer, String> mapRoles = listRoles.stream()
-                .collect(Collectors.toMap(Role::getId, Role::getName));
-
-
-        for (User user : listUsers) {
-            List<String> listUserRoleNames = mapUserIdToRoleIds
-                    .getOrDefault(user.getId(), Collections.emptyList())
-                    .stream()
-                    .map(mapRoles::get)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-
-            userWithRolesDto.add(new UserWithRolesDto(user.getTelegramUserId(), listUserRoleNames));
-        }
-
-        return userWithRolesDto;
     }
 
-    private  void validation(List<Long> telegramUserIds){
+    private void validate(List<Long> telegramUserIds) {
 
-        if (telegramUserIds.isEmpty() ) {
+        if (telegramUserIds.isEmpty()) {
             throw new IllegalArgumentException("telegram_user_ids must not be empty");
         }
 
         for (Long id : telegramUserIds) {
-            if (id == null ) {
+            if (id == null) {
                 throw new IllegalArgumentException("telegram_user_ids must not contain nulls");
             }
-            if (id<=0){
+            if (id <= 0) {
                 throw new IllegalArgumentException("telegram_user_ids must be positive");
             }
         }

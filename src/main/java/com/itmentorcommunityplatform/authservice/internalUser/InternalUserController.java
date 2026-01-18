@@ -33,6 +33,8 @@ public class InternalUserController {
     @GetInternalUsersWithRoles
     public ResponseEntity<List<UserWithRolesDto>> getListUsers(@RequestParam(value = "telegram_user_ids") List<Long> telegramUserIds){
             var result=internalUserService.getListUsers(telegramUserIds);
-            return  ResponseEntity.ok().body(result);
+            return  ResponseEntity
+                    .ok()
+                    .body(result);
     }
 }

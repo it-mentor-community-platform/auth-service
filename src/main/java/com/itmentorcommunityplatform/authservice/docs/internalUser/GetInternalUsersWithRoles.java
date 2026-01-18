@@ -32,65 +32,75 @@ import java.lang.annotation.Target;
                 description = "Telegram_user_ids must not contain nulls",
                 content = @Content(
                         mediaType = "application/json",
-                        schema = @Schema(example = "{\n" +
-                                "  \"timestamp\": \"2026-01-15T20:15:31.729733400Z\",\n" +
-                                "  \"status\": 400,\n" +
-                                "  \"error\": \"Bad Request\",\n" +
-                                "  \"message\": \"telegram_user_ids must not contain nulls\",\n" +
-                                "  \"path\": \"/api/auth/internal/users\"\n" +
-                                "}")
+                        schema = @Schema(example = """
+                                {
+                                  "timestamp": "2026-01-18T21:41:42.704234900Z",
+                                  "status": 400,
+                                  "error": "Bad Request",
+                                  "message": "telegram_user_ids must not contain nulls",
+                                  "path": "/api/auth/internal/users"
+                                }
+                                """)
                 )),
         @ApiResponse(
                 responseCode = "400",
                 description = "Telegram_user_ids must not be empty",
                 content = @Content(
                         mediaType = "application/json",
-                        schema = @Schema(example = "{\n" +
-                                "  \"timestamp\": \"2026-01-15T20:16:01.271706700Z\",\n" +
-                                "  \"status\": 400,\n" +
-                                "  \"error\": \"Bad Request\",\n" +
-                                "  \"message\": \"telegram_user_ids must not be empty\",\n" +
-                                "  \"path\": \"/api/auth/internal/users\"\n" +
-                                "}")
+                        schema = @Schema(example = """
+                                {
+                                  "timestamp": "2026-01-18T21:42:42.722176100Z",
+                                  "status": 400,
+                                  "error": "Bad Request",
+                                  "message": "telegram_user_ids must not be empty",
+                                  "path": "/api/auth/internal/users"
+                                }
+                                """)
                 )),
         @ApiResponse(
                 responseCode = "400",
                 description = "Telegram_user_ids must be positive",
                 content = @Content(
                         mediaType = "application/json",
-                        schema = @Schema(example = "{\n" +
-                                "  \"timestamp\": \"2026-01-15T20:16:27.825148800Z\",\n" +
-                                "  \"status\": 400,\n" +
-                                "  \"error\": \"Bad Request\",\n" +
-                                "  \"message\": \"telegram_user_ids must be positive\",\n" +
-                                "  \"path\": \"/api/auth/internal/users\"\n" +
-                                "}")
+                        schema = @Schema(example = """
+                                {
+                                  "timestamp": "2026-01-18T21:43:08.427385700Z",
+                                  "status": 400,
+                                  "error": "Bad Request",
+                                  "message": "telegram_user_ids must be positive",
+                                  "path": "/api/auth/internal/users"
+                                }
+                                """)
                 )),
         @ApiResponse(
                 responseCode = "400",
                 description = "Parameter is missing: telegram_user_ids",
                 content = @Content(
                         mediaType = "application/json",
-                        schema = @Schema(example = "{\n" +
-                                "  \"timestamp\": \"2026-01-15T20:16:59.682342900Z\",\n" +
-                                "  \"status\": 400,\n" +
-                                "  \"error\": \"Bad Request\",\n" +
-                                "  \"message\": \"Parameter is missing: telegram_user_ids\",\n" +
-                                "  \"path\": \"/api/auth/internal/users\"\n" +
-                                "}")
+                        schema = @Schema(example = """
+                                {
+                                  "timestamp": "2026-01-18T21:43:29.021364400Z",
+                                  "status": 400,
+                                  "error": "Bad Request",
+                                  "message": "Parameter is missing: telegram_user_ids",
+                                  "path": "/api/auth/internal/users"
+                                }
+                                """)
                 )),
         @ApiResponse(
                 responseCode = "400",
                 description = "Invalid parameter type",
                 content = @Content(
                         mediaType = "application/json",
-                        schema = @Schema(example = "{\n" +
-                                "  \"timestamp\": \"2026-01-15T20:24:16.694916700Z\",\n" +
-                                "  \"status\": 400,\n" +
-                                "  \"error\": \"Bad Request\",\n" +
-                                "  \"message\": \"Invalid parameter type\",\n" +
-                                "  \"path\": \"/api/auth/internal/users\"\n" +
-                                "}")
+                        schema = @Schema(example = """
+                                {
+                                  "timestamp": "2026-01-18T21:43:52.016065300Z",
+                                  "status": 400,
+                                  "error": "Bad Request",
+                                  "message": "Invalid parameter type",
+                                  "path": "/api/auth/internal/users"
+                                }
+                                """)
                 ))
 }
 )

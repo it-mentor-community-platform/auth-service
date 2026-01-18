@@ -42,7 +42,7 @@ Content-Type: application/json
 
 
 ### Iternal Users - 200 OK
-GET http://localhost:8081/api/auth/internal/users?telegram_user_ids=1,2,3
+GET http://localhost:8081/api/auth/internal/users?telegram_user_ids=1,2,3,4
 Content-Type: application/json
 ###
 

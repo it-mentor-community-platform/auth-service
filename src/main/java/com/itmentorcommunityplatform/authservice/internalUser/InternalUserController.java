@@ -21,7 +21,7 @@ public class InternalUserController {
 
     @PostMapping("/internal/user")
     @InternalUserControllerDocs
-    public ResponseEntity<Void> upsertUser(@RequestBody @Valid UserUpsertRequestDto requestDto){
+    public ResponseEntity<Void> upsertUser(@RequestBody @Valid UserUpsertRequestDto requestDto) {
         var result = internalUserService.upsertUser(requestDto);
         return result.created()
                 ? ResponseEntity.status(HttpStatus.CREATED).build()
@@ -31,10 +31,10 @@ public class InternalUserController {
 
     @GetMapping("/internal/users")
     @GetInternalUsersWithRoles
-    public ResponseEntity<List<UserWithRolesDto>> getListUsers(@RequestParam(value = "telegram_user_ids") List<Long> telegramUserIds){
-            var result=internalUserService.getListUsers(telegramUserIds);
-            return  ResponseEntity
-                    .ok()
-                    .body(result);
+    public ResponseEntity<List<UserWithRolesDto>> getListUsers(@RequestParam(value = "telegram_user_ids") List<Long> telegramUserIds) {
+        var result = internalUserService.getListUsers(telegramUserIds);
+        return ResponseEntity
+                .ok(result);
+
     }
 }

@@ -77,7 +77,7 @@ public class InternalUserService {
 
         validate(telegramUserIds);
 
-        return userWithRolesRepository.findUserWithRolesByTelegramUserIds(telegramUserIds).stream().toList();
+        return userWithRolesRepository.findUserWithRolesByTelegramUserIds(telegramUserIds);
 
     }
 

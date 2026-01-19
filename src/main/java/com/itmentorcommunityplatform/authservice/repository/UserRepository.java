@@ -12,6 +12,4 @@ public interface  UserRepository extends CrudRepository<User,Integer> {
 
     Optional<User> findByTelegramUserId(Long telegramUserId);
 
-    List<User> findAllByTelegramUserIdIn(List<Long> telegramUserIds);
-
 }

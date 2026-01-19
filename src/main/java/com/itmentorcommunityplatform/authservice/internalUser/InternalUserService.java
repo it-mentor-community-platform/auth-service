@@ -2,16 +2,20 @@ package com.itmentorcommunityplatform.authservice.internalUser;
 
 import com.itmentorcommunityplatform.authservice.entity.Role;
 import com.itmentorcommunityplatform.authservice.entity.User;
+import com.itmentorcommunityplatform.authservice.entity.UserRole;
 import com.itmentorcommunityplatform.authservice.kafka.AuthEventProducer;
 import com.itmentorcommunityplatform.authservice.kafka.UserCreatedEvent;
 import com.itmentorcommunityplatform.authservice.repository.RoleRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRoleRepository;
+import com.itmentorcommunityplatform.authservice.repository.UserWithRolesRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +26,7 @@ public class InternalUserService {
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final AuthEventProducer kafkaEventProducer;
+    private final UserWithRolesRepository userWithRolesRepository;
 
     @Transactional
     public InternalUserResultUpsertDto upsertUser(UserUpsertRequestDto requestDto) {
@@ -66,5 +71,29 @@ public class InternalUserService {
         }
 
         return new InternalUserResultUpsertDto(user.getTelegramUserId(), created);
+    }
+
+    public List<UserWithRolesDto> getListUsers(List<Long> telegramUserIds) {
+
+        validate(telegramUserIds);
+
+        return userWithRolesRepository.findUserWithRolesByTelegramUserIds(telegramUserIds);
+
+    }
+
+    private void validate(List<Long> telegramUserIds) {
+
+        if (telegramUserIds.isEmpty()) {
+            throw new IllegalArgumentException("telegram_user_ids must not be empty");
+        }
+
+        for (Long id : telegramUserIds) {
+            if (id == null) {
+                throw new IllegalArgumentException("telegram_user_ids must not contain nulls");
+            }
+            if (id <= 0) {
+                throw new IllegalArgumentException("telegram_user_ids must be positive");
+            }
+        }
     }
 }

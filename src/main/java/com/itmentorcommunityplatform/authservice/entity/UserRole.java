@@ -1,18 +1,18 @@
 package com.itmentorcommunityplatform.authservice.entity;
 
+
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 @Data
-@Table(name = "users")
-public class User {
+@Table(name = "users_roles")
+public class UserRole {
 
-    @Id
-    private Integer id;
+    @Column("user_id")
+    private Integer userId;
 
-    @Column("telegram_user_id")
-    private Long telegramUserId;
+    @Column("role_id")
+    private Integer roleId;
 
 }

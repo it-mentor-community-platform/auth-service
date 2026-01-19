@@ -4,12 +4,13 @@ import com.itmentorcommunityplatform.authservice.entity.Role;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Repository
-public interface RoleRepository extends CrudRepository<Role,Integer> {
+public interface RoleRepository extends CrudRepository<Role, Integer> {
 
     List<Role> findByNameIn(Collection<String> names);
+
+    List<Role> findAllByIdIn(Set<Integer> id);
 
 }

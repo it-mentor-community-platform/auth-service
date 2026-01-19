@@ -38,4 +38,37 @@ Content-Type: application/json
   "telegram_user_id": null ,
   "roles": []
 }
+###
+
+
+### Iternal Users - 200 OK
+GET http://localhost:8081/api/auth/internal/users?telegram_user_ids=1,2,3,4
+Content-Type: application/json
+###
+
+### Iternal Users - 400 telegram_user_ids must not contain nulls
+GET http://localhost:8081/api/auth/internal/users?telegram_user_ids=1,,2
+Content-Type: application/json
+###
+
+### Iternal Users - 400 telegram_user_ids must not be empty
+GET http://localhost:8081/api/auth/internal/users?telegram_user_ids=
+Content-Type: application/json
+###
+
+### Iternal Users - 400 telegram_user_ids must be positive
+GET http://localhost:8081/api/auth/internal/users?telegram_user_ids=-1
+Content-Type: application/json
+###
+
+### Iternal Users - 400 parameter is missing: telegram_user_ids
+GET http://localhost:8081/api/auth/internal/users
+Content-Type: application/json
+###
+
+### Iternal Users - 400 Invalid parameter type
+GET http://localhost:8081/api/auth/internal/users?telegram_user_ids=a
+Content-Type: application/json
+###
+
 

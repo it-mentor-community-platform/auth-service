@@ -1,0 +1,31 @@
+spring:
+  datasource:
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yml
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+kafka:
+  topic:
+    auth-user-created: auth.user.created
+
+telegram:
+  bot-token: ${TELEGRAM_BOT_TOKEN}
+  init-data-expiration-seconds: 1800
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration_minutes: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus

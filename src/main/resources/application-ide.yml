@@ -3,32 +3,14 @@ spring:
     url: jdbc:postgresql://localhost:5432/it_mentor_community_platform?currentSchema=auth_service
     username: ${POSTGRES_USERNAME:root}
     password: ${POSTGRES_PASSWORD:password}
-    driver-class-name: org.postgresql.Driver
-  liquibase:
-    change-log: classpath:/db/changelog/db.changelog-master.yml
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-
-kafka:
-  topic:
-    auth-user-created: auth.user.created
 
 telegram:
   bot-token: ${TELEGRAM_BOT_TOKEN:open test token}
-  init-data-expiration-seconds: 1800
 
 jwt:
   secret: 632eca39fc29068edc74133ca9cf8f40b4942191f80c0c78dd588835beb5f57b
-  expiration_minutes: 30
 
 server:
   port: 8081
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,prometheus

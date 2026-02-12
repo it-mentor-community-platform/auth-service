@@ -3,8 +3,15 @@ spring:
     url: ${POSTGRES_URL}
     username: ${POSTGRES_USERNAME}
     password: ${POSTGRES_PASSWORD}
+
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    properties:
+      security.protocol: ${KAFKA_SECURITY_PROTOCOL}
+      sasl.mechanism: ${KAFKA_SASL_MECHANISM}
+      sasl.jaas.config: ${KAFKA_SASL_JAAS_CONFIG}
+      ssl.truststore.type: ${KAFKA_SSL_TRUSTSTORE_TYPE}
+      ssl.truststore.location: ${KAFKA_SSL_TRUSTSTORE_LOCATION}
 
 telegram:
   bot-token: ${TELEGRAM_BOT_TOKEN}

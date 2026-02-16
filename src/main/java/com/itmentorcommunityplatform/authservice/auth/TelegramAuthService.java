@@ -1,5 +1,6 @@
 package com.itmentorcommunityplatform.authservice.auth;
 
+import com.itmentorcommunityplatform.authservice.constant.Role;
 import com.itmentorcommunityplatform.authservice.entity.User;
 import com.itmentorcommunityplatform.authservice.kafka.AuthEventProducer;
 import com.itmentorcommunityplatform.authservice.kafka.UserCreatedEvent;
@@ -12,11 +13,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class TelegramAuthService {
 
+    private final AuthConfig authConfig;
     private final TelegramInitDataValidator validator;
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -43,7 +47,11 @@ public class TelegramAuthService {
             User user = userRepository.findByTelegramUserId(telegramUserId)
                     .orElseGet(() -> createNewUser(telegramUserId, telegramUsername, firstName, lastName));
 
-            var userRoles = userRoleRepository.findRolesByUserId(user.getId());
+            if (authConfig.adminsIds().contains(telegramUserId) ) {
+                userRoleRepository.insertUserRole(user.getId(), List.of(Role.ADMIN.getRoleId()));
+            }
+
+            List<String> userRoles = userRoleRepository.findRolesByUserId(user.getId());
             log.info("User Roles = {}",userRoles);
 
             String token = jwtService.generateToken(telegramUserId, userRoles, telegramUsername);

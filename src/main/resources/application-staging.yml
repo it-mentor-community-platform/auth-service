@@ -15,6 +15,7 @@ spring:
 
 telegram:
   bot-token: ${TELEGRAM_BOT_TOKEN}
+  admins: 197342870,6926659633,107541084
 
 jwt:
   secret: ${JWT_SECRET}

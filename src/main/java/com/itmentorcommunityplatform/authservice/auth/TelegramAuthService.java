@@ -20,7 +20,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TelegramAuthService {
 
-    private final AuthConfig authConfig;
     private final TelegramInitDataValidator validator;
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -30,6 +29,9 @@ public class TelegramAuthService {
 
     @Value("${telegram.init-data-expiration-seconds}")
     private long expirationSeconds;
+
+    @Value("${telegram.admins}")
+    private List<Long> adminsIds;
 
     @Transactional
     public AuthResponseDto authenticateByTelegram(String initData) {
@@ -47,12 +49,12 @@ public class TelegramAuthService {
             User user = userRepository.findByTelegramUserId(telegramUserId)
                     .orElseGet(() -> createNewUser(telegramUserId, telegramUsername, firstName, lastName));
 
-            if (authConfig.adminsIds().contains(telegramUserId) ) {
+            if (adminsIds.contains(telegramUserId)) {
                 userRoleRepository.insertUserRole(user.getId(), List.of(Role.ADMIN.getRoleId()));
             }
 
             List<String> userRoles = userRoleRepository.findRolesByUserId(user.getId());
-            log.info("User Roles = {}",userRoles);
+            log.info("User Roles = {}", userRoles);
 
             String token = jwtService.generateToken(telegramUserId, userRoles, telegramUsername);
             log.info("JWT token generated for userId={}", user.getId());

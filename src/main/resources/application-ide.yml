@@ -6,10 +6,6 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
 
-telegram:
-  bot-token: ${TELEGRAM_BOT_TOKEN}
-  admins: 197342870,6926659633,107541084
-
 jwt:
   secret: 632eca39fc29068edc74133ca9cf8f40b4942191f80c0c78dd588835beb5f57b
 

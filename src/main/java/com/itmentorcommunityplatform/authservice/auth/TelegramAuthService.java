@@ -49,9 +49,7 @@ public class TelegramAuthService {
             User user = userRepository.findByTelegramUserId(telegramUserId)
                     .orElseGet(() -> createNewUser(telegramUserId, telegramUsername, firstName, lastName));
 
-            if (adminsIds.contains(telegramUserId)) {
-                userRoleRepository.insertUserRole(user.getId(), List.of(Role.ADMIN.getRoleId()));
-            }
+            setRoles(user, telegramUserId);
 
             List<String> userRoles = userRoleRepository.findRolesByUserId(user.getId());
             log.info("User Roles = {}", userRoles);
@@ -79,5 +77,13 @@ public class TelegramAuthService {
         kafkaEventProducer.sendUserCreated(new UserCreatedEvent(telegramUserId, telegramUsername, firstName, lastName));
         log.info("A message about creating the new user was sent to kafka.");
         return saved;
+    }
+
+    private void setRoles(User user, Long telegramUserId) {
+        if (adminsIds.contains(telegramUserId)) {
+            userRoleRepository.insertUserRole(user.getId(), List.of(Role.ADMIN.getRoleId(), Role.STUDENT.getRoleId()));
+        } else {
+            userRoleRepository.insertUserRole(user.getId(), List.of(Role.STUDENT.getRoleId()));
+        }
     }
 }

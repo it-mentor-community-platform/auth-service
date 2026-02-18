@@ -13,8 +13,5 @@ spring:
       ssl.truststore.type: ${KAFKA_SSL_TRUSTSTORE_TYPE}
       ssl.truststore.location: ${KAFKA_SSL_TRUSTSTORE_LOCATION}
 
-telegram:
-  bot-token: ${TELEGRAM_BOT_TOKEN}
-
 jwt:
   secret: ${JWT_SECRET}

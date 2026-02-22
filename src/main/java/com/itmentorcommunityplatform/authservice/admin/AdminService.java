@@ -4,6 +4,8 @@ import com.itmentorcommunityplatform.authservice.constant.Role;
 import com.itmentorcommunityplatform.authservice.dummyAuth.UserNotFoundException;
 import com.itmentorcommunityplatform.authservice.entity.User;
 import com.itmentorcommunityplatform.authservice.internalUser.InvalidRoleException;
+import com.itmentorcommunityplatform.authservice.kafka.AuthEventProducer;
+import com.itmentorcommunityplatform.authservice.kafka.UserAuthenticatedEvent;
 import com.itmentorcommunityplatform.authservice.repository.UserRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class AdminService {
 
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
+    private final AuthEventProducer kafkaEventProducer;
 
     @Transactional
     public void changeUserRoles(Long telegramUserId,
@@ -49,6 +52,15 @@ public class AdminService {
         preventAdminRoleChange(userRoles, targetRoles);
 
         refreshUserRoles(userId, targetRoles);
+
+        publishUserRolesChangedEvent(telegramUserId, userId);
+    }
+
+    private void publishUserRolesChangedEvent(Long telegramUserId, Integer userId) {
+        List<String> updatedRoles = userRoleRepository.findRolesByUserId(userId);
+        kafkaEventProducer.sendUserAuthenticated(
+                new UserAuthenticatedEvent(telegramUserId, null, null, null, updatedRoles));
+        log.info("Successfully sent change roles message to kafka, for telegramUserId: {}, roles: {}", telegramUserId, updatedRoles);
     }
 
     private void refreshUserRoles(Integer userId, List<Role> targetRoles) {

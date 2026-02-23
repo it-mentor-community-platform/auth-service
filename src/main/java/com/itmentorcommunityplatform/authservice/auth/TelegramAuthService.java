@@ -3,7 +3,9 @@ package com.itmentorcommunityplatform.authservice.auth;
 import com.itmentorcommunityplatform.authservice.constant.Role;
 import com.itmentorcommunityplatform.authservice.entity.User;
 import com.itmentorcommunityplatform.authservice.kafka.AuthEventProducer;
+import com.itmentorcommunityplatform.authservice.kafka.UserAuthenticatedEvent;
 import com.itmentorcommunityplatform.authservice.kafka.UserCreatedEvent;
+import com.itmentorcommunityplatform.authservice.kafka.exception.KafkaSendException;
 import com.itmentorcommunityplatform.authservice.mapper.UserMapper;
 import com.itmentorcommunityplatform.authservice.repository.UserRepository;
 import com.itmentorcommunityplatform.authservice.repository.UserRoleRepository;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -45,7 +48,9 @@ public class TelegramAuthService {
             String lastName = telegramInitData.lastName();
             log.info("InitData validated successfully for telegramUserId={}", telegramUserId);
 
-            UserRolesDto userRolesDto = userRepository.findUserRolesByTelegramUserId(telegramUserId)
+            Optional<UserRolesDto> existingUser = userRepository.findUserRolesByTelegramUserId(telegramUserId);
+            boolean isNewUser = existingUser.isEmpty();
+            UserRolesDto userRolesDto = existingUser
                     .orElseGet(() -> createNewUserWithRole(telegramUserId, telegramUsername, firstName, lastName));
 
             log.info("User Roles = {}", userRolesDto.roles());
@@ -54,11 +59,18 @@ public class TelegramAuthService {
             log.info("JWT token generated for userId={}", userRolesDto.id());
 
             UserResponseDto userResponseDto = userMapper.toResponseDto(userRolesDto);
+
+            if (!isNewUser) {
+                sendAuthenticationMessageToKafka(telegramUserId, telegramUsername, firstName, lastName, userRolesDto.roles());
+            }
             log.info("User successfully authenticated via Telegram");
 
             return new AuthResponseDto(token, userResponseDto);
         } catch (InvalidInitDataException e) {
             log.error("Telegram authentication failed: {}", e.getMessage());
+            throw e;
+        } catch (KafkaSendException e) {
+            log.error("Telegram authentication failed while sending message to kafka", e);
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Authentication failed", e);
@@ -69,10 +81,17 @@ public class TelegramAuthService {
         User saved = userRepository.save(new User(telegramUserId));
         log.info("New user created with id={}", saved.getId());
         kafkaEventProducer.sendUserCreated(new UserCreatedEvent(telegramUserId, telegramUsername, firstName, lastName));
-        log.info("A message about creating the new user was sent to kafka.");
+        log.info("Successfully sent creation message to kafka, for telegramUserId: {}", telegramUserId);
 
         List<String> roles = setRoles(saved, telegramUserId);
         return userMapper.toUserRolesDto(saved, roles);
+    }
+
+    private void sendAuthenticationMessageToKafka(Long telegramUserId, String telegramUsername,
+                                                  String firstName, String lastName, List<String> roles) {
+        kafkaEventProducer.sendUserAuthenticated(
+                new UserAuthenticatedEvent(telegramUserId, telegramUsername, firstName, lastName, roles));
+        log.info("Successfully sent authentication message to kafka, for telegramUserId: {}", telegramUserId);
     }
 
     private List<String> setRoles(User user, Long telegramUserId) {

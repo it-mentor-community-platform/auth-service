@@ -53,14 +53,14 @@ public class AdminService {
 
         refreshUserRoles(userId, targetRoles);
 
-        publishUserRolesChangedEvent(telegramUserId, userId);
+        publishUserRolesChangedEvent(telegramUserId, targetRoles);
     }
 
-    private void publishUserRolesChangedEvent(Long telegramUserId, Integer userId) {
-        List<String> updatedRoles = userRoleRepository.findRolesByUserId(userId);
+    private void publishUserRolesChangedEvent(Long telegramUserId, List<Role> targetRoles) {
+        List<String> rolesToPublish = targetRoles.stream().map(Role::name).distinct().toList();
         kafkaEventProducer.sendUserAuthenticated(
-                new UserAuthenticatedEvent(telegramUserId, null, null, null, updatedRoles));
-        log.info("Successfully sent change roles message to kafka, for telegramUserId: {}, roles: {}", telegramUserId, updatedRoles);
+                new UserAuthenticatedEvent(telegramUserId, null, null, null, rolesToPublish));
+        log.info("Successfully sent change roles message to kafka, for telegramUserId: {}, roles: {}", telegramUserId, targetRoles);
     }
 
     private void refreshUserRoles(Integer userId, List<Role> targetRoles) {

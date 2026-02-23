@@ -16,6 +16,7 @@ spring:
 kafka:
   topic:
     auth-user-created: staging.auth.user.created
+    auth-user-authenticated: staging.auth.user.authenticated
 
 jwt:
   secret: ${JWT_SECRET}

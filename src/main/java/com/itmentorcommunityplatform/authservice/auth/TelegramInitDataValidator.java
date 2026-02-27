@@ -92,22 +92,22 @@ public class TelegramInitDataValidator {
             throw new InvalidInitDataException("Invalid auth_date: from the future");
 
         if (now - authDate > expirationSeconds)
-            throw new  InvalidInitDataException("InitData expired");
+            throw new InvalidInitDataException("InitData expired");
     }
 
-    private TelegramInitData extractUserData(Map<String, String> data){
+    private TelegramInitData extractUserData(Map<String, String> data) {
         try {
             String userJson = data.get("user");
-            if (userJson == null){
+            if (userJson == null) {
                 throw new InvalidInitDataException("Missing user");
             }
 
             JsonNode userData = objectMapper.readTree(userJson);
 
             long id = userData.get("id").asLong();
-            String username = userData.get("username").asText(null);
-            String firstName = userData.get("first_name").asText(null);
-            String lastName = userData.get("last_name").asText(null);
+            String username = userData.path("username").asText(null);
+            String firstName = userData.path("first_name").asText(null);
+            String lastName = userData.path("last_name").asText(null);
 
             return new TelegramInitData(id, username, firstName, lastName);
         } catch (Exception e) {
@@ -115,5 +115,3 @@ public class TelegramInitDataValidator {
         }
     }
 }
-
-

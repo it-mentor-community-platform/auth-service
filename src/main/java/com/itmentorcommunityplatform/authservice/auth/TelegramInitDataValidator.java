@@ -25,6 +25,9 @@ public class TelegramInitDataValidator {
     @Value("${telegram.bot-token}")
     private String botToken;
 
+    @Value("${validate-telegram-initdata-timestamp}")
+    private boolean timestampValidationEnabled;
+
     public TelegramInitData validateAndParse(String initData, long expirationSeconds)
             throws InvalidInitDataException {
         Map<String, String> data = parseInitData(initData);
@@ -82,6 +85,7 @@ public class TelegramInitDataValidator {
 
     private void validateAuthDate(Map<String, String> data, long expirationSeconds) {
         String authDateStr = data.get("auth_date");
+        System.out.println("data"+ authDateStr);
         if (authDateStr == null)
             throw new InvalidInitDataException("Missing auth_date");
 
@@ -91,7 +95,7 @@ public class TelegramInitDataValidator {
         if (authDate > now + 300)
             throw new InvalidInitDataException("Invalid auth_date: from the future");
 
-        if (now - authDate > expirationSeconds)
+        if (now - authDate > expirationSeconds && timestampValidationEnabled)
             throw new InvalidInitDataException("InitData expired");
     }
 

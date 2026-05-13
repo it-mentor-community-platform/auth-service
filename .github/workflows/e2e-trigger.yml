@@ -3,7 +3,7 @@ name: Trigger E2E Tests
 on:
   push:
     branches:
-      - '**'
+      - staging
 
 jobs:
   trigger-e2e:

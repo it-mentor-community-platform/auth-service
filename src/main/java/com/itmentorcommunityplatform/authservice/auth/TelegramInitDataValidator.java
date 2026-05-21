@@ -32,7 +32,6 @@ public class TelegramInitDataValidator {
     @PostConstruct
     public void checkEnv() {
         if (botToken == null || botToken.isBlank()) {
-            log.error("КРИТИЧЕСКАЯ ОШИБКА: TELEGRAM_BOT_TOKEN не задан!");
             throw new IllegalStateException("TELEGRAM_BOT_TOKEN is missing or invalid. Application cannot start.");
         }
     }

@@ -2,6 +2,7 @@ package com.itmentorcommunityplatform.authservice.auth;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.HmacAlgorithms;
@@ -24,6 +25,16 @@ public class TelegramInitDataValidator {
 
     @Value("${telegram.bot-token}")
     private String botToken;
+
+    @Value("${validate-telegram-initdata-timestamp}")
+    private boolean timestampValidationEnabled;
+
+    @PostConstruct
+    public void checkEnv() {
+        if (botToken == null || botToken.isBlank()) {
+            throw new IllegalStateException("TELEGRAM_BOT_TOKEN is missing or invalid. Application cannot start.");
+        }
+    }
 
     public TelegramInitData validateAndParse(String initData, long expirationSeconds)
             throws InvalidInitDataException {
@@ -91,7 +102,7 @@ public class TelegramInitDataValidator {
         if (authDate > now + 300)
             throw new InvalidInitDataException("Invalid auth_date: from the future");
 
-        if (now - authDate > expirationSeconds)
+        if (now - authDate > expirationSeconds && timestampValidationEnabled)
             throw new InvalidInitDataException("InitData expired");
     }
 

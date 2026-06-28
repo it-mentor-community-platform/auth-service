@@ -35,3 +35,5 @@ management:
     web:
       exposure:
         include: health,info,prometheus
+
+validate-telegram-initdata-timestamp: true

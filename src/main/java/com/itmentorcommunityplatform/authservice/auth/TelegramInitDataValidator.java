@@ -95,8 +95,12 @@ public class TelegramInitDataValidator {
         String authDateStr = data.get("auth_date");
         if (authDateStr == null)
             throw new InvalidInitDataException("Missing auth_date");
-
-        long authDate = Long.parseLong(authDateStr);
+        final long authDate;
+        try {
+            authDate = Long.parseLong(authDateStr);
+        } catch (NumberFormatException e) {
+            throw new InvalidInitDataException("Invalid auth_date");
+        }
         long now = System.currentTimeMillis() / 1000;
 
         if (authDate > now + 300)

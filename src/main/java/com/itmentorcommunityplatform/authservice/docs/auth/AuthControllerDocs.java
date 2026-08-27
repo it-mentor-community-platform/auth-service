@@ -2,6 +2,7 @@ package com.itmentorcommunityplatform.authservice.docs.auth;
 
 
 import com.itmentorcommunityplatform.authservice.advice.ErrorResponseDto;
+import com.itmentorcommunityplatform.authservice.auth.TelegramAuthRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -36,7 +37,8 @@ import java.lang.annotation.Target;
         requestBody = @RequestBody(
                 required = true,
                 content = @Content(
-                        mediaType = "text/plain",
+                        mediaType = "application/json",
+                        schema = @Schema(implementation = TelegramAuthRequestDto.class),
                         examples = {
                                 @ExampleObject(
                                         name = "Valid initData example",
@@ -47,10 +49,8 @@ import java.lang.annotation.Target;
         )
 )
 @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Authentication successful. JWT returned in Authorization header."),
+        @ApiResponse(responseCode = "200", description = "Authentication successful. JWT returned in X-Access-Token header."),
         @ApiResponse(responseCode = "400", description = "Invalid initData format",
-                content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
-        @ApiResponse(responseCode = "401", description = "Unauthorized",
                 content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))),
         @ApiResponse(responseCode = "500", description = "Internal server error",
                 content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))

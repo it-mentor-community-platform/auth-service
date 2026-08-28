@@ -59,7 +59,9 @@ public class TelegramInitDataValidator {
         String[] pairs = initData.split("&");
         for (String pair : pairs) {
             int idx = pair.indexOf('=');
-            if (idx <= 0) continue;
+            if (idx <= 0){
+                continue;
+            }
             String key = pair.substring(0, idx);
             String rawValue = pair.substring(idx + 1);
             String value = URLDecoder.decode(rawValue, StandardCharsets.UTF_8);
@@ -72,8 +74,9 @@ public class TelegramInitDataValidator {
 
     private void validateHash(Map<String, String> data) {
         String receivedHash = data.remove("hash");
-        if (receivedHash == null)
+        if (receivedHash == null) {
             throw new InvalidInitDataException("Missing hash");
+        }
 
         String dataCheckString = data.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
@@ -87,14 +90,16 @@ public class TelegramInitDataValidator {
         String calculatedHash = new HmacUtils(HmacAlgorithms.HMAC_SHA_256, secretKey)
                 .hmacHex(dataCheckString);
 
-        if (!calculatedHash.equalsIgnoreCase(receivedHash))
+        if (!calculatedHash.equalsIgnoreCase(receivedHash)) {
             throw new InvalidInitDataException("Invalid hash");
+        }
     }
 
     private void validateAuthDate(Map<String, String> data, long expirationSeconds) {
         String authDateStr = data.get("auth_date");
-        if (authDateStr == null)
+        if (authDateStr == null) {
             throw new InvalidInitDataException("Missing auth_date");
+        }
         final long authDate;
         try {
             authDate = Long.parseLong(authDateStr);
@@ -103,11 +108,13 @@ public class TelegramInitDataValidator {
         }
         long now = System.currentTimeMillis() / 1000;
 
-        if (authDate > now + 300)
+        if (authDate > now + 300) {
             throw new InvalidInitDataException("Invalid auth_date: from the future");
+        }
 
-        if (now - authDate > expirationSeconds && timestampValidationEnabled)
+        if (now - authDate > expirationSeconds && timestampValidationEnabled) {
             throw new InvalidInitDataException("InitData expired");
+        }
     }
 
     private TelegramInitData extractUserData(Map<String, String> data) {

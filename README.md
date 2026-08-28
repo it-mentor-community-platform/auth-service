@@ -48,8 +48,10 @@
 При локальном тестировании на docker, использовать - http://localhost:8081/api/auth/by-telegram
 
 **Request body:**
-```text/plain
-user=%7B%22id%22%3...
+```Content-Type: application-json
+{
+  "initDataRaw": "user=%7B%22id%22%3..."
+}
 ```
 
 ## 🛠 Локальный запуск и конфигурация

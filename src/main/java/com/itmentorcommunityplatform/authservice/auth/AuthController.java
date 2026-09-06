@@ -1,8 +1,8 @@
 package com.itmentorcommunityplatform.authservice.auth;
 
 import com.itmentorcommunityplatform.authservice.docs.auth.AuthControllerDocs;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,8 +18,8 @@ public class AuthController {
 
     @PostMapping("/by-telegram")
     @AuthControllerDocs
-    public ResponseEntity<Void> authenticate(@RequestBody String initData) {
-        AuthResponseDto response = telegramAuthService.authenticateByTelegram(initData);
+    public ResponseEntity<Void> authenticate(@Valid @RequestBody TelegramAuthRequestDto request) {
+        AuthResponseDto response = telegramAuthService.authenticateByTelegram(request.initDataRaw());
         return ResponseEntity.ok()
                 .header("X-Access-Token", response.accessToken())
                 .build();

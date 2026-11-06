@@ -1,6 +1,9 @@
 package com.itmentorcommunityplatform.authservice.advice;
 
 import com.itmentorcommunityplatform.authservice.auth.InvalidInitDataException;
+import com.itmentorcommunityplatform.authservice.client.ProfileNotFoundException;
+import com.itmentorcommunityplatform.authservice.client.ProfileServiceBadRequestException;
+import com.itmentorcommunityplatform.authservice.client.ProfileServiceUnavailableException;
 import com.itmentorcommunityplatform.authservice.dummyAuth.UserNotFoundException;
 import com.itmentorcommunityplatform.authservice.internalUser.InvalidRoleException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,7 +14,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
@@ -91,6 +93,52 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    @ExceptionHandler(ProfileNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleProfileNotFound(
+            ProfileNotFoundException ex,
+            HttpServletRequest request
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(buildError(
+                        HttpStatus.NOT_FOUND,
+                        ex.getMessage(),
+                        request
+                ));
+    }
+
+    @ExceptionHandler(ProfileServiceBadRequestException.class)
+    public ResponseEntity<ErrorResponseDto> handleProfileServiceBadRequest(
+            ProfileServiceBadRequestException ex,
+            HttpServletRequest request
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(buildError(
+                        HttpStatus.BAD_REQUEST,
+                        ex.getMessage(),
+                        request
+                ));
+    }
+
+    @ExceptionHandler(ProfileServiceUnavailableException.class)
+    public ResponseEntity<ErrorResponseDto> handleProfileServiceUnavailable(
+            ProfileServiceUnavailableException ex,
+            HttpServletRequest request
+    ) {
+        log.error("Profile Service call failed", ex);
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(buildError(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Profile Service is unavailable",
+                        request
+                ));
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleOtherExceptions(Exception ex,
@@ -133,7 +181,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponseDto> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest req){
+    public ResponseEntity<ErrorResponseDto> handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest req) {
 
         log.warn("Bad request: {}", ex.getMessage());
 

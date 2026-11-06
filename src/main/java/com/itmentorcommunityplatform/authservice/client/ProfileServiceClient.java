@@ -67,7 +67,7 @@ public class ProfileServiceClient {
                 throw new ProfileServiceUnavailableException("Profile Service return empty body");
             }
 
-            return result;
+            return new ProfileLookupResponseDto(telegramUserId, result.details());
         } catch (WebClientException ex) {
             throw new ProfileServiceUnavailableException("Profile Service call failed", ex);
         }

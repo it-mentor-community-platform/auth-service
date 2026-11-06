@@ -3,6 +3,8 @@ package com.itmentorcommunityplatform.authservice.dummyAuth;
 import com.itmentorcommunityplatform.authservice.auth.AuthResponseDto;
 import com.itmentorcommunityplatform.authservice.auth.JwtService;
 import com.itmentorcommunityplatform.authservice.auth.UserResponseDto;
+import com.itmentorcommunityplatform.authservice.client.ProfileLookupResponseDto;
+import com.itmentorcommunityplatform.authservice.client.ProfileServiceClient;
 import com.itmentorcommunityplatform.authservice.entity.Role;
 import com.itmentorcommunityplatform.authservice.entity.User;
 import com.itmentorcommunityplatform.authservice.internalUser.InvalidRoleException;
@@ -12,7 +14,6 @@ import com.itmentorcommunityplatform.authservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.Collectors;
 
@@ -24,17 +25,18 @@ public class DummyAuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
+    private final ProfileServiceClient profileClient;
 
-
-    @Transactional(readOnly = true)
     public AuthResponseDto authenticateDummy(DummyRequestDto requestDto) {
         log.debug("|Dummy| Authenticate process started");
 
         var rolesNames = requestDto.rolesNames();
-        var userId = requestDto.userId();
+        ProfileLookupResponseDto profile = findProfile(requestDto);
+        var telegramUserId = profile.telegramUserId();
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+
+        User user = userRepository.findByTelegramUserId(telegramUserId)
+                .orElseThrow(() -> new UserNotFoundException(telegramUserId));
 
         var roles = roleRepository.findByNameIn(rolesNames);
         log.info("Roles that was found: {}", roles.stream().toList());
@@ -48,12 +50,34 @@ public class DummyAuthService {
             throw new InvalidRoleException("Unknown roles: " + unknownRoles);
         }
         log.info("User Roles = {}", rolesNames);
-        String token = jwtService.generateToken(user.getTelegramUserId(), rolesNames, requestDto.telegramUsername());
+        String telegramUsername = extractUsername(profile.details().telegramUrl());
+        String token = jwtService.generateToken(user.getTelegramUserId(), rolesNames, telegramUsername);
         log.info("JWT token generated for userId={}", user.getId());
 
         UserResponseDto userResponseDto = userMapper.toDto(user);
         log.info("|Dummy| User successfully authenticated ");
 
         return new AuthResponseDto(token, userResponseDto);
+    }
+
+    private ProfileLookupResponseDto findProfile(DummyRequestDto dto) {
+        if (dto.telegramUserId() != null) {
+            return profileClient.findByTelegramUserId(dto.telegramUserId());
+        }
+
+        if (dto.telegramUrl() != null) {
+            return profileClient.findByTelegramUrl(dto.telegramUrl());
+        }
+
+        return profileClient.findByGithubUrl(dto.githubProfileUrl());
+    }
+
+    private String extractUsername(String telegramUrl) {
+        if (telegramUrl == null) {
+            return null;
+        }
+        int beginIndex = telegramUrl.lastIndexOf('/') + 1;
+
+        return telegramUrl.substring(beginIndex);
     }
 }

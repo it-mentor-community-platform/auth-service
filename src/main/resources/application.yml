@@ -30,6 +30,11 @@ telegram:
 jwt:
   expiration_minutes: 30
 
+profile-service:
+  url: http://profile-service:8080
+  connect-timeout: 2s
+  read-timeout: 5s
+
 management:
   endpoints:
     web:

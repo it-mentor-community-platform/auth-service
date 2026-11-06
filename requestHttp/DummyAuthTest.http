@@ -1,45 +1,145 @@
-### Dummy User  — Successful request 200
+### 200 - happy path
 POST http://localhost:8081/api/auth/by-dummy
 Content-Type: application/json
 
 {
-  "user_id": 3,
-  "roles": ["ADMIN","STUDENT"],
-  "telegram_username": "user"
+  "telegram_user_id": 395212293,
+  "roles": ["ADMIN", "STUDENT"]
 }
-###
 
-
-### Dummy User  — 400
+### 200 - don't have username in claims jwt
 POST http://localhost:8081/api/auth/by-dummy
 Content-Type: application/json
 
 {
-  "user_id": 1,
-  "roles": [],
-  "telegram_username": "user"
+  "telegram_user_id": 1164724553,
+  "roles": ["ADMIN", "STUDENT"]
 }
-###
 
-### Dummy User  — 400
+### 200 - find by github url, don't have username in claims jwt
 POST http://localhost:8081/api/auth/by-dummy
 Content-Type: application/json
 
 {
-  "user_id": -2,
-  "roles": ["ADMIN","STUDENT"],
-  "telegram_username": "user"
+  "github_profile_url": "https://github.com/d-klokov",
+  "roles": ["STUDENT"]
 }
-###
 
-### Dummy User  — 400
+### 200 - find by telegram url
 POST http://localhost:8081/api/auth/by-dummy
 Content-Type: application/json
 
 {
-  "user_id": 1,
-  "roles": ["ADMIN","STUDENT"],
-  "telegram_username": ""
+  "telegram_url": "https://t.me/krios2146",
+  "roles": ["STUDENT"]
 }
-###
 
+### 404 - user not found
+POST http://localhost:8081/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "telegram_user_id": 999999999999,
+  "roles": ["STUDENT"]
+}
+
+### 404 - case-sensitive, url doesn't exist
+POST http://localhost:8081/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "telegram_url": "https://t.me/KRIOS2146",
+  "roles": ["STUDENT"]
+}
+
+### 400 - exactly one of identifier
+POST http://localhost:8081/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "telegram_user_id": 123456789,
+  "telegram_url": "https://t.me/zhukovsd",
+  "github_profile_url": "https://github.com/zhukovsd",
+
+  "roles": ["ROLE_1", "ROLE_2"]
+}
+
+### 400 - without identifier
+POST http://localhost:8081/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "roles": ["ROLE_1", "ROLE_2"]
+}
+
+### 400 - empty list roles
+POST http://localhost:8081/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "telegram_user_id": 395212293,
+  "roles": []
+}
+
+### 400 - Unknown roles
+POST http://localhost:8081/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "telegram_user_id": 395212293,
+  "roles": ["GOD","STUDENT"]
+}
+
+### 400 - negative telegram user id
+POST http://localhost:8081/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "telegram_user_id": -1,
+  "roles": ["STUDENT"]
+}
+
+### 400 - empty telegram url
+POST http://localhost:8081/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "telegram_url": "",
+  "roles": ["STUDENT"]
+}
+
+### 400 - empty github url
+POST http://localhost:8081/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "github_profile_url": "",
+  "roles": ["STUDENT"]
+}
+
+### 400 - incorrect github url
+POST http://localhost:8081/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "github_profile_url": "hello",
+  "roles": ["STUDENT"]
+}
+
+### 400 - incorrect telegram url
+POST http://localhost:8081/api/auth/by-dummy
+Content-Type: application/json
+
+{
+  "github_profile_url": "hello",
+  "roles": ["STUDENT"]
+}
+
+### 400 - null role
+POST http://localhost:8081/api/auth/by-dummy
+Content-Type: application/json
+
+{
+"telegram_url": "https://t.me/krios2146",
+"roles": [null]
+}

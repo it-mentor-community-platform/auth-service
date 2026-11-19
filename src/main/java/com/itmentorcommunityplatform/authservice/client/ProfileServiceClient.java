@@ -12,8 +12,6 @@ import reactor.core.publisher.Mono;
 public class ProfileServiceClient {
     private static final String BY_TELEGRAM_URL = "/api/profile/internal/profile/by-telegram-url";
     private static final String BY_GITHUB_URL = "/api/profile/internal/profile/by-github-profile-url";
-    private static final String BY_PROFILE = "/api/profile/profile";
-    private static final String TELEGRAM_ID_HEADER = "X-Telegram-User-Id";
 
     private final WebClient webClient;
 
@@ -45,29 +43,6 @@ public class ProfileServiceClient {
             }
 
             return result;
-        } catch (WebClientException ex) {
-            throw new ProfileServiceUnavailableException("Profile Service call failed", ex);
-        }
-    }
-
-    public ProfileLookupResponseDto findByTelegramUserId(Long telegramUserId) {
-        String telegramUserIdString = String.valueOf(telegramUserId);
-
-        try {
-            ProfileLookupResponseDto result = webClient.get()
-                    .uri(BY_PROFILE)
-                    .header(TELEGRAM_ID_HEADER, telegramUserIdString)
-                    .retrieve()
-                    .onStatus(status -> status.isSameCodeAs(HttpStatus.NOT_FOUND),
-                            response -> Mono.error(new ProfileNotFoundException("Profile not found for telegram user id: ".concat(telegramUserIdString))))
-                    .bodyToMono(ProfileLookupResponseDto.class)
-                    .block();
-
-            if (result == null) {
-                throw new ProfileServiceUnavailableException("Profile Service return empty body");
-            }
-
-            return new ProfileLookupResponseDto(telegramUserId, result.details());
         } catch (WebClientException ex) {
             throw new ProfileServiceUnavailableException("Profile Service call failed", ex);
         }

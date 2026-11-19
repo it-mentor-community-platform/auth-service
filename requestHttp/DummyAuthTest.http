@@ -131,7 +131,7 @@ POST http://localhost:8081/api/auth/by-dummy
 Content-Type: application/json
 
 {
-  "github_profile_url": "hello",
+  "telegram_url": "hello",
   "roles": ["STUDENT"]
 }
 

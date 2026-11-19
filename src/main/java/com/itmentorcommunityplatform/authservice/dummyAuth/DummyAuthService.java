@@ -31,8 +31,17 @@ public class DummyAuthService {
         log.debug("|Dummy| Authenticate process started");
 
         var rolesNames = requestDto.rolesNames();
-        ProfileLookupResponseDto profile = findProfile(requestDto);
-        var telegramUserId = profile.telegramUserId();
+        final Long telegramUserId;
+        final String telegramUsername;
+
+        if (requestDto.telegramUserId() != null) {
+            telegramUserId = requestDto.telegramUserId();
+            telegramUsername = null;
+        } else {
+            ProfileLookupResponseDto profile = findProfileByUrl(requestDto);
+            telegramUserId = profile.telegramUserId();
+            telegramUsername = extractUsername(profile.details().telegramUrl());
+        }
 
 
         User user = userRepository.findByTelegramUserId(telegramUserId)
@@ -50,7 +59,6 @@ public class DummyAuthService {
             throw new InvalidRoleException("Unknown roles: " + unknownRoles);
         }
         log.info("User Roles = {}", rolesNames);
-        String telegramUsername = extractUsername(profile.details().telegramUrl());
         String token = jwtService.generateToken(user.getTelegramUserId(), rolesNames, telegramUsername);
         log.info("JWT token generated for userId={}", user.getId());
 
@@ -60,11 +68,7 @@ public class DummyAuthService {
         return new AuthResponseDto(token, userResponseDto);
     }
 
-    private ProfileLookupResponseDto findProfile(DummyRequestDto dto) {
-        if (dto.telegramUserId() != null) {
-            return profileClient.findByTelegramUserId(dto.telegramUserId());
-        }
-
+    private ProfileLookupResponseDto findProfileByUrl(DummyRequestDto dto) {
         if (dto.telegramUrl() != null) {
             return profileClient.findByTelegramUrl(dto.telegramUrl());
         }
